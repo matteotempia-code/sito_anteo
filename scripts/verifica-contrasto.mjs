@@ -136,10 +136,13 @@ for (const [tema, token] of [
 
 // Il piè di pagina ha colori propri, perché è l'unico fondo scuro fisso.
 const PIEDE = [
-  ['#d9d2e4', '#2a2139', 4.5, 'testo del piè di pagina'],
-  ['#e6e0ee', '#2a2139', 4.5, 'collegamenti del piè di pagina'],
-  ['#a99cbe', '#2a2139', 4.5, 'titoletti e nota del piè di pagina'],
-  ['#c4bbd2', '#2a2139', 4.5, 'frase del piè di pagina'],
+  ['#d9d2e4', '#241c33', 4.5, 'testo del piè di pagina'],
+  ['#e6e0ee', '#241c33', 4.5, 'collegamenti del piè di pagina'],
+  ['#a99cbe', '#241c33', 4.5, 'titoletti e nota del piè di pagina'],
+  ['#b7abc9', '#241c33', 4.5, 'recapiti del piè di pagina'],
+  ['#ffffff', '#241c33', 4.5, 'nome nel piè di pagina'],
+  ['#ded4ee', '#4a3468', 4.5, 'barra di servizio in testata'],
+  ['#ffffff', '#4a3468', 4.5, 'numero verde nella barra di servizio'],
   ['#ffffff', '#4a3468', 4.5, 'titolo del riquadro scuro in home'],
   ['#efeaf6', '#4a3468', 4.5, 'testo del riquadro scuro in home'],
   ['#cbbde3', '#4a3468', 4.5, 'occhiello del riquadro scuro in home'],

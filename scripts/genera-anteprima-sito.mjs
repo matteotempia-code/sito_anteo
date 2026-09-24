@@ -1,17 +1,26 @@
 #!/usr/bin/env node
 /**
- * Anteprima navigabile del nuovo sito: sei schermate in un file solo.
+ * Anteprima navigabile del nuovo sito.
  *
- * Serve a giudicare il sistema su più pagine, che è l'unico modo serio di
- * giudicarlo. I colori vengono da `token.css` e i contenuti dai file in
- * `src/content/`: se cambiano lì, cambiano qui. Si ripete soltanto il
- * markup, perché senza Astro i componenti non si montano.
+ * Seconda versione. La prima aveva un difetto grave: per far stare sei
+ * schermate in un file avevo ridotto la testata a una riga di testo, il piè
+ * di pagina a un'altra, e la home aveva perso il titolo che dice che cosa fa
+ * Anteo Impresa Sociale, il paragrafo di identità, la fotografia, le icone
+ * delle porte, i numeri dei settori e la fascia dei quattro numeri grandi.
+ * Il risultato era più povero del prototipo da cui eravamo partiti.
+ *
+ * Qui la composizione torna quella dell'artboard. Restano soltanto le
+ * correzioni che avevano una ragione: i contrasti, il colore che significa
+ * settore e nient'altro, il blocco sicurezza, l'indirizzo oscurato dove
+ * serve, nessun importo da nessuna parte.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { scheda as rsa } from '../src/content/rsa-gran-torino.js';
-import { SETTORI, PORTE, SICUREZZA, RICERCA, GRUPPO, INVIANTI, ANNUNCIO } from '../src/content/schermate.js';
+import { SICUREZZA, RICERCA, GRUPPO, INVIANTI, ANNUNCIO } from '../src/content/schermate.js';
+import { IDENTITA, NUMERI, PORTE, SETTORI } from '../src/content/anteo.js';
+import { testata, piede, briciole, icona, e } from './pezzi.mjs';
 
 const qui = dirname(fileURLToPath(import.meta.url));
 const css = readFileSync(resolve(qui, '../src/styles/token.css'), 'utf8');
@@ -31,87 +40,69 @@ function blocco(sel) {
 const vars = (o) => Object.entries(o).map(([k, v]) => `    ${k}: ${v};`).join('\n');
 const chiaro = vars(blocco(':root {'));
 const scuro = vars(blocco(":root[data-tema='scuro']"));
-const e = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/* Il marchio vero, dal vettoriale, incorporato nella pagina: l'anteprima è
-   un file solo e non può andare a prendere un file accanto. */
-const marchio = (file) =>
-  'data:image/svg+xml;base64,' +
-  readFileSync(resolve(qui, `../public/marchio/${file}`)).toString('base64');
-const LOGO = marchio('logo-lockup.svg');
-const LOGO_BIANCO = marchio('logo-lockup-bianco.svg');
-
-/* ------------------------------------------------------------------ pezzi */
-const nav = (attiva) => `
-  <header class="sito-testata">
-    <div class="guscio riga-testata">
-      <img class="marchio" src="${LOGO}" alt="Anteo Impresa Sociale" width="318" height="305">
-      <nav aria-label="Navigazione principale">
-        ${['Trova un servizio', 'Per i servizi invianti', 'Lavora con noi', 'Chi siamo', 'Enti e gare']
-          .map((v) => `<span${v === attiva ? ' class="attiva" aria-current="page"' : ''}>${v}</span>`)
-          .join('')}
-      </nav>
-    </div>
-  </header>`;
-
-const briciole = (voci) =>
-  `<div class="guscio briciole">${voci.map((v, i) => `<span${i === voci.length - 1 ? ' aria-current="page"' : ''}>${e(v)}</span>`).join(' ')}</div>`;
-
-const piede = `
-  <footer class="sito-piede">
-    <div class="guscio">
-      <img class="marchio-bianco" src="${LOGO_BIANCO}" alt="Anteo Impresa Sociale" width="318" height="305">
-      <p class="piede-riga"><strong>Anteo Impresa Sociale</strong> — società cooperativa sociale · Biella</p>
-      <span class="piede-link">Informativa privacy · Dichiarazione di accessibilità · Contatti</span>
-    </div>
-  </footer>`;
-
-const bloccoSicurezza = `
-  <aside class="sicurezza" aria-label="Se sei in pericolo">
-    <p class="sic-titolo">${e(SICUREZZA.titolo)}</p>
-    <ul>
-      ${SICUREZZA.righe.map(([n, d]) => `<li><strong class="numeri">${e(n)}</strong> ${e(d)}</li>`).join('')}
-    </ul>
-    <p class="sic-avviso">${e(SICUREZZA.avviso)}</p>
-    <span class="sic-esci">${e(SICUREZZA.uscita)}</span>
-  </aside>`;
-
-/* ------------------------------------------------------------------ pagine */
-
+/* ============================================================== HOME ==== */
 const HOME = `
-${nav('')}
-<section class="guscio apertura-home">
-  <p class="etichetta">Anteo Impresa Sociale</p>
-  <h1 class="titolo-apertura">Di chi stiamo parlando, e che cosa succede?</h1>
-  <p class="occhiello-testo">Da qui si parte dalla situazione, non dalla categoria autorizzativa.
-  Se il servizio giusto non è nostro, te lo diciamo lo stesso.</p>
-  <div class="porte">
-    ${PORTE.map(([occ, tit, txt], i) => `
-    <article class="porta p-${i + 1}">
-      <p class="etichetta">${e(occ)}</p>
-      <h2>${e(tit)}</h2>
-      <p class="porta-testo">${e(txt)}</p>
-      <span class="freccia" aria-hidden="true">→</span>
-    </article>`).join('')}
+${testata('')}
+
+<section class="ingresso">
+  <div class="guscio ingresso-griglia">
+    <div class="ingresso-testo">
+      <p class="etichetta">${e(IDENTITA.occhiello)}</p>
+      <h1>${e(IDENTITA.titolo)}</h1>
+      <p class="identita">${e(IDENTITA.testo)}</p>
+    </div>
+    <figure class="ingresso-foto">
+      <div class="posa"><span class="etichetta">${e(IDENTITA.foto)}</span></div>
+      <figcaption>${e(IDENTITA.fotoDidascalia)}</figcaption>
+    </figure>
   </div>
 </section>
 
-<section class="guscio sez">
-  <h2>Sei settori, <span class="numeri">347</span> servizi</h2>
-  <p class="sotto"><strong class="numeri">347 servizi</strong> è il dato ufficiale, dal gestionale.
-  Le <strong class="numeri">140 sedi</strong> qui sotto sono i luoghi fisici: sono due grandezze
-  diverse e le teniamo separate.</p>
-  <ul class="griglia-settori">
-    ${SETTORI.map(([cod, nome, sedi, desc, diretto]) => `
-    <li class="scheda-settore s-${cod}">
-      <div class="testa-settore">
-        <h3>${e(nome)}</h3>
-        <span class="pillola s-${cod}"><span class="numeri">${sedi}</span>&nbsp;sedi</span>
-      </div>
-      <p>${e(desc)}</p>
-      ${diretto ? '' : '<p class="accesso">Si entra tramite il servizio pubblico inviante, non scrivendo a noi.</p>'}
-    </li>`).join('')}
-  </ul>
+<section class="porte-sez">
+  <div class="guscio">
+    <h2>Chi sei?</h2>
+    <div class="porte">
+      ${PORTE.map((p) => `
+      <article class="porta">
+        <span class="bolla">${icona(p.icona)}</span>
+        <p class="etichetta">${e(p.occhiello)}</p>
+        <h3>${e(p.titolo)}</h3>
+        <p class="porta-testo">${e(p.testo)}</p>
+        <span class="collegamento">${e(p.azione)} <span aria-hidden="true">→</span></span>
+      </article>`).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="fascia-numeri">
+  <div class="guscio">
+    <dl>
+      ${NUMERI.map(([n, d]) => `<div><dt class="numeri">${e(n)}</dt><dd>${e(d)}</dd></div>`).join('')}
+    </dl>
+  </div>
+</section>
+
+<section class="settori-sez">
+  <div class="guscio">
+    <div class="titolo-doppio">
+      <h2>Sei settori, <span class="numeri">347</span> servizi</h2>
+      <p>in <span class="numeri">140</span> sedi, dal Piemonte alla Sicilia</p>
+    </div>
+    <ul class="griglia-settori">
+      ${SETTORI.map((s) => `
+      <li class="settore s-${s.codice}">
+        <div class="settore-testa">
+          <span class="sedi numeri">${s.sedi}</span>
+          <span class="sedi-eti">sedi</span>
+        </div>
+        <h3>${e(s.nome)}</h3>
+        <p>${e(s.testo)}</p>
+        ${s.accessoDiretto ? '' : '<p class="accesso">Si entra tramite il servizio pubblico inviante.</p>'}
+        <span class="collegamento">Vai al settore <span aria-hidden="true">→</span></span>
+      </li>`).join('')}
+    </ul>
+  </div>
 </section>
 
 <section class="guscio sez">
@@ -134,49 +125,50 @@ ${nav('')}
 <section class="guscio sez">
   <div class="riquadro-lavoro">
     <div>
-      <p class="etichetta chiara">Lavora con noi</p>
+      <p class="etichetta chiara">Stiamo assumendo</p>
       <h2 class="bianco">[N] posizioni aperte in [N] province</h2>
-      <p>Retribuzione dichiarata in ogni annuncio, livello CCNL, indennità. Dopo tre anni si può
-      diventare soci — con quello che comporta, spiegato prima.</p>
+      <p>OSS, infermieri, educatori, psicologi, coordinatori. CCNL Cooperative sociali, formazione
+      pagata, retribuzione dichiarata in ogni annuncio, e dopo tre anni la possibilità di diventare
+      socio — con quello che comporta, spiegato prima.</p>
     </div>
     <span class="azione a-bianco">Vedi le posizioni</span>
   </div>
 </section>
 ${piede}`;
 
+/* ============================================================= TROVA ==== */
 const TROVA = `
-${nav('Trova un servizio')}
-${briciole(['Home', 'Trova un servizio'])}
+${testata('I servizi')}
+${briciole(['Home', 'I servizi'])}
 <section class="guscio apertura">
   <h1>${e(RICERCA.titolo)}</h1>
   <p class="occhiello-testo">${e(RICERCA.intro)}</p>
-  ${bloccoSicurezza}
+  <aside class="sicurezza" aria-label="Se sei in pericolo">
+    <p class="sic-titolo">${e(SICUREZZA.titolo)}</p>
+    <ul>${SICUREZZA.righe.map(([n, d]) => `<li><strong class="numeri">${e(n)}</strong> ${e(d)}</li>`).join('')}</ul>
+    <p class="sic-avviso">${e(SICUREZZA.avviso)}</p>
+    <span class="sic-esci">${e(SICUREZZA.uscita)}</span>
+  </aside>
   <form class="filtro" onsubmit="return false">
     ${RICERCA.passi.map((p) => `
     <fieldset>
       <legend>${e(p.legenda)}</legend>
-      <div class="opzioni">
-        ${p.opzioni.map((o) => `<span class="opzione">${e(o)}</span>`).join('')}
-      </div>
+      <div class="opzioni">${p.opzioni.map((o) => `<span class="opzione">${e(o)}</span>`).join('')}</div>
     </fieldset>`).join('')}
     <span class="azione a-primario largo">${e(RICERCA.azione)}</span>
     <p class="nota">${e(RICERCA.nota)}</p>
   </form>
 </section>
-
 <section class="guscio sez">
   <h2>${e(RICERCA.esito)}</h2>
   <ul class="risultati">
-    ${[['anziani', 'RSA Gran Torino', 'Residenza sanitaria per anziani · Torino', '[N] posti disponibili'],
-       ['anziani', 'Casa di riposo [NOME]', 'Casa di riposo · [COMUNE]', 'Lista d’attesa'],
-       ['salute-mentale', 'Centro diurno [NOME]', 'Centro diurno · [COMUNE]', 'Su invio del CSM']]
-      .map(([cod, nome, tipo, stato]) => `
+    ${[['anziani', 'RSA Gran Torino', 'Residenza sanitaria per anziani · Torino', '[N] posti disponibili', 'p-positivo'],
+       ['anziani', 'Casa di riposo [NOME]', 'Casa di riposo · [COMUNE]', 'Lista d’attesa', 'p-critico'],
+       ['salute-mentale', 'Centro diurno [NOME]', 'Centro diurno · [COMUNE]', 'Su invio del CSM', 'p-neutro']]
+      .map(([cod, nome, tipo, stato, cls]) => `
     <li class="risultato s-${cod}">
-      <div>
-        <h3>${e(nome)}</h3>
-        <p>${e(tipo)}</p>
-      </div>
-      <span class="pillola ${stato.includes('posti') ? 'p-positivo' : stato.includes('attesa') ? 'p-critico' : 'p-neutro'}">${e(stato)}</span>
+      <div><h3>${e(nome)}</h3><p>${e(tipo)}</p></div>
+      <span class="pillola ${cls}">${e(stato)}</span>
     </li>`).join('')}
   </ul>
   <p class="nota">Quando il servizio adatto non è nostro, l’elenco lo dice e indirizza altrove.
@@ -184,8 +176,9 @@ ${briciole(['Home', 'Trova un servizio'])}
 </section>
 ${piede}`;
 
+/* ========================================================= SCHEDA RSA === */
 const SCHEDA_RSA = `
-${nav('Trova un servizio')}
+${testata('I servizi')}
 ${briciole(rsa.percorso)}
 <header class="guscio apertura">
   <div class="riga-meta">
@@ -198,10 +191,8 @@ ${briciole(rsa.percorso)}
 </header>
 <div class="guscio">
   <figure style="margin:0">
-    <div class="segnaposto">
-      <p class="etichetta">${e(rsa.galleria.segnaposto)}</p>
-      <p>${e(rsa.galleria.didascalia)}</p>
-    </div>
+    <div class="posa larga"><span class="etichetta">${e(rsa.galleria.segnaposto)}</span>
+      <span class="posa-sotto">${e(rsa.galleria.didascalia)}</span></div>
     <figcaption>${e(rsa.galleria.nota)}</figcaption>
   </figure>
 </div>
@@ -214,8 +205,7 @@ ${briciole(rsa.percorso)}
     </ol></section>
     <section class="costi"><h2>${e(rsa.costi.titolo)}</h2>
       ${rsa.costi.testo.map((t) => `<p>${e(t)}</p>`).join('')}
-      <ul class="voci">${rsa.costi.voci.map((v) => `<li>${e(v)}</li>`).join('')}</ul>
-    </section>
+      <ul class="voci">${rsa.costi.voci.map((v) => `<li>${e(v)}</li>`).join('')}</ul></section>
     <section><h2>Come si entra</h2><ol class="passi">
       ${rsa.ingresso.map(([t, d]) => `<li><span class="numero" aria-hidden="true"></span><div><h3>${e(t)}</h3><p>${e(d)}</p></div></li>`).join('')}
     </ol><p class="nota"><a href="#">Documenti da portare: l’elenco completo</a></p></section>
@@ -236,38 +226,34 @@ ${briciole(rsa.percorso)}
       <span class="azione a-secondario largo">Fatti richiamare</span></div>
     <div class="riquadro quieto"><h2>Dove si trova</h2>
       <p class="indirizzo">${e(rsa.indirizzo)}</p>
-      <ul class="arrivare">${rsa.comeArrivare.map((r) => `<li>${e(r)}</li>`).join('')}</ul></div>
-    <div class="riquadro quieto"><h2>Lavori nel settore?</h2><p>${e(rsa.lavoro)}</p></div>
+      <ul class="arrivare">${rsa.comeArrivare.map((r) => `<li>${e(r)}</li>`).join('')}</ul>
+      <div class="posa mappa"><span class="etichetta">[MAPPA]</span></div></div>
+    <div class="riquadro quieto"><h2>Lavori nel settore?</h2><p>${e(rsa.lavoro)}</p>
+      <span class="collegamento">Vedi le posizioni qui <span aria-hidden="true">→</span></span></div>
   </aside>
 </div>
 ${piede}`;
 
+/* ==================================================== GRUPPO APPART. ==== */
 const GRUPPO_APP = `
-${nav('Trova un servizio')}
-${briciole(['Home', 'Servizi', 'Salute mentale', 'Vercelli', GRUPPO.nome])}
+${testata('I servizi')}
+${briciole(['Home', 'I servizi', 'Salute mentale', 'Vercelli', GRUPPO.nome])}
 <header class="guscio apertura">
-  <div class="riga-meta">
-    <span class="pillola s-salute-mentale">${e(GRUPPO.tipologia)}</span>
-  </div>
+  <div class="riga-meta"><span class="pillola s-salute-mentale">${e(GRUPPO.tipologia)}</span></div>
   <h1>${e(GRUPPO.nome)}</h1>
   <p class="dati">${e(GRUPPO.dove)}</p>
 </header>
 <div class="guscio impaginato">
   <div>
-    <section class="avviso-accesso">
-      <h2>${e(GRUPPO.accesso.titolo)}</h2>
-      <p>${e(GRUPPO.accesso.testo)}</p>
-    </section>
+    <section class="avviso-accesso"><h2>${e(GRUPPO.accesso.titolo)}</h2><p>${e(GRUPPO.accesso.testo)}</p></section>
     <section><h2>Che cos’è</h2><p>${e(GRUPPO.cosa)}</p></section>
     <section><h2>Chi ci lavora</h2><p>${e(GRUPPO.equipe)}</p></section>
     <section><h2>Il progetto della persona</h2><p>${e(GRUPPO.progetto)}</p></section>
     <section class="costi"><h2>${e(GRUPPO.costi.titolo)}</h2><p>${e(GRUPPO.costi.testo)}</p></section>
   </div>
   <aside class="lato">
-    <div class="riquadro riservatezza">
-      <h2>${e(GRUPPO.riservatezza.titolo)}</h2>
-      <p>${e(GRUPPO.riservatezza.testo)}</p>
-    </div>
+    <div class="riquadro riservatezza"><h2>${e(GRUPPO.riservatezza.titolo)}</h2>
+      <p>${e(GRUPPO.riservatezza.testo)}</p></div>
     <div class="riquadro quieto"><h2>Sei un operatore del CSM?</h2>
       <p>Requisiti, disponibilità e il referente di settore stanno nell’area per i servizi invianti.</p>
       <span class="azione a-secondario largo">Vai all’area invianti</span></div>
@@ -275,8 +261,9 @@ ${briciole(['Home', 'Servizi', 'Salute mentale', 'Vercelli', GRUPPO.nome])}
 </div>
 ${piede}`;
 
+/* ========================================================== INVIANTI ==== */
 const AREA_INVIANTI = `
-${nav('Per i servizi invianti')}
+${testata('Per i servizi invianti')}
 ${briciole(['Home', 'Per i servizi invianti'])}
 <header class="guscio apertura">
   <h1>${e(INVIANTI.titolo)}</h1>
@@ -306,8 +293,9 @@ ${briciole(['Home', 'Per i servizi invianti'])}
 </section>
 ${piede}`;
 
+/* ========================================================== ANNUNCIO ==== */
 const ANNUNCIO_LAVORO = `
-${nav('Lavora con noi')}
+${testata('Lavora con noi')}
 ${briciole(['Home', 'Lavora con noi', ANNUNCIO.ruolo])}
 <header class="guscio apertura">
   <div class="riga-meta"><span class="pillola s-anziani">${e(ANNUNCIO.dove)}</span></div>
@@ -323,17 +311,13 @@ ${briciole(['Home', 'Lavora con noi', ANNUNCIO.ruolo])}
   <div>
     <section><h2>Chi cerchiamo</h2><p>${e(ANNUNCIO.chiCerchiamo)}</p></section>
     <section><h2>Che cosa fai</h2><p>${e(ANNUNCIO.cosaFai)}</p></section>
-    <section><h2>Come funziona la selezione</h2>
-      <ol class="passi">
-        ${ANNUNCIO.selezione.map(([q, d]) => `<li><span class="numero" aria-hidden="true"></span><div><h3>${e(q)}</h3><p>${e(d)}</p></div></li>`).join('')}
-      </ol>
-      <p class="nota">Tempi dichiarati: è una promessa che vincola noi, ed è per questo che funziona.</p>
-    </section>
+    <section><h2>Come funziona la selezione</h2><ol class="passi">
+      ${ANNUNCIO.selezione.map(([q, d]) => `<li><span class="numero" aria-hidden="true"></span><div><h3>${e(q)}</h3><p>${e(d)}</p></div></li>`).join('')}
+    </ol><p class="nota">Tempi dichiarati: è una promessa che vincola noi, ed è per questo che funziona.</p></section>
     <section><h2>Diventare socio</h2><p>${e(ANNUNCIO.socio)}</p></section>
   </div>
   <aside class="lato">
-    <div class="riquadro"><h2>Candidati in tre minuti</h2>
-      <p>${e(ANNUNCIO.candidatura)}</p>
+    <div class="riquadro"><h2>Candidati in tre minuti</h2><p>${e(ANNUNCIO.candidatura)}</p>
       <div class="campo"><label>Nome e cognome <span>(obbligatorio)</span></label><input type="text" autocomplete="name"></div>
       <div class="campo"><label>Telefono <span>(obbligatorio)</span></label><input type="tel" autocomplete="tel" inputmode="tel"></div>
       <span class="azione a-primario largo">Invia la candidatura</span>
@@ -355,7 +339,7 @@ const PAGINE = [
 const html = `<title>Sito Anteo Impresa Sociale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600&display=swap">
 <style>
   :root {
 ${chiaro}
@@ -374,20 +358,22 @@ ${scuro}
     font-family: var(--font-testo); font-size: var(--corpo-2);
     line-height: var(--interlinea-larga); -webkit-font-smoothing: antialiased; }
   h1,h2,h3 { font-family: var(--font-display); font-weight: 600; color: var(--inchiostro);
-    line-height: 1.12; letter-spacing: -0.012em; margin: 0; text-wrap: balance; }
+    line-height: 1.12; letter-spacing: -0.014em; margin: 0; text-wrap: balance; }
   h1 { font-size: var(--corpo-6); } h2 { font-size: var(--corpo-5); }
   h3 { font-size: var(--corpo-3); line-height: 1.3; }
   p { margin: 0; max-width: 65ch; }
-  a { color: var(--primario); }
-  ul, ol { margin: 0; padding: 0; }
+  ul, ol, dl { margin: 0; padding: 0; }
   .numeri { font-variant-numeric: tabular-nums; }
   .etichetta { font-size: var(--corpo-1); font-weight: 600; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--testo-tenue); }
   .mini { font-size: var(--corpo-1); color: var(--testo-tenue); }
   .nota { font-size: var(--corpo-1); color: var(--testo-secondario); margin-top: 16px; }
+  .icona { width: 40px; height: 40px; }
+  .icona.piccola { width: 20px; height: 20px; }
+  .collegamento { color: var(--primario); font-weight: 600; font-size: var(--corpo-1); }
 
-  /* ---------- la barra dell'anteprima, non fa parte del sito ---------- */
-  .barra { position: sticky; top: 0; z-index: 10; background: var(--inchiostro);
+  /* ------- barra dell'anteprima, non fa parte del sito ------- */
+  .barra { position: sticky; top: 0; z-index: 20; background: var(--inchiostro);
     color: var(--fondo); padding: 12px 16px; display: flex; flex-wrap: wrap;
     gap: 8px 16px; align-items: center; }
   .barra .titolo { font-size: var(--corpo-1); font-weight: 600; letter-spacing: 0.08em;
@@ -399,59 +385,92 @@ ${scuro}
     border-color: var(--fondo); font-weight: 600; }
   .barra .sep { flex: 1; }
   :is(button, input, a):focus-visible { outline: 3px solid var(--primario); outline-offset: 2px; }
-
   .palco { padding: 24px 16px 48px; }
   .telaio { background: var(--fondo); border: 1px solid var(--bordo); border-radius: var(--raggio);
-    overflow: hidden; margin: 0 auto; max-width: 1180px; transition: max-width 200ms ease; }
+    overflow: hidden; margin: 0 auto; max-width: 1240px; transition: max-width 200ms ease; }
   .telaio.telefono { max-width: 390px; }
-  .pagina { display: none; }
-  .pagina.viva { display: block; }
+  .pagina { display: none; } .pagina.viva { display: block; }
 
-  /* ---------- il sito ---------- */
-  .guscio { max-width: 1100px; margin: 0 auto; padding-inline: 16px; }
-  .telaio.telefono .guscio { padding-inline: 16px; }
+  /* ================= il sito ================= */
+  .guscio { max-width: 1160px; margin: 0 auto; padding-inline: 16px; }
+
+  .barra-servizio { background: var(--primario-scuro); color: #ded4ee; font-size: var(--corpo-1); }
+  .riga-servizio { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center;
+    justify-content: space-between; padding-block: 8px; }
+  .servizio-destra { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; }
+  .verde strong { color: #ffffff; font-weight: 600; }
+  .soci { border: 1px solid rgb(255 255 255 / 0.35); border-radius: 999px; padding: 2px 12px; }
+
   .sito-testata { background: var(--superficie); border-bottom: 1px solid var(--bordo); }
-  .riga-testata { display: flex; align-items: center; justify-content: space-between;
-    gap: 24px; min-height: 68px; flex-wrap: wrap; padding-block: 12px; }
-  .marchio { height: 48px; width: auto; display: block; flex: none; }
-  .marchio-bianco { height: 60px; width: auto; display: block; margin-bottom: 16px; }
-  .piede-riga { margin: 0; }
-  .riga-testata nav { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: var(--corpo-1);
-    color: var(--testo-secondario); font-weight: 500; }
-  .riga-testata .attiva { color: var(--primario); font-weight: 600; box-shadow: inset 0 -2px 0 var(--primario); }
+  .riga-testata { display: flex; align-items: center; gap: 32px; min-height: 88px;
+    padding-block: 12px; flex-wrap: wrap; }
+  .marchio { height: 56px; width: auto; display: block; flex: none; }
+  .riga-testata nav { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: var(--corpo-1);
+    color: var(--testo-secondario); font-weight: 500; flex: 1; }
+  .riga-testata .attiva { color: var(--primario); font-weight: 600;
+    box-shadow: inset 0 -2px 0 var(--primario); }
+  .ricerca { display: inline-flex; align-items: center; gap: 8px; color: var(--testo-secondario);
+    border: 1px solid var(--bordo-controllo); border-radius: 999px; padding: 8px 16px;
+    font-size: var(--corpo-1); }
 
-  .briciole { padding-top: 16px; font-size: var(--corpo-1); color: var(--testo-tenue); }
-  .briciole span + span::before { content: "› "; color: var(--bordo-controllo); }
-  .apertura { padding-top: 24px; }
-  .apertura-home { padding-top: 40px; }
-  .titolo-apertura { font-size: var(--corpo-7); margin-top: 8px; max-width: 18ch; }
-  .occhiello-testo { font-size: var(--corpo-3); color: var(--testo-secondario); margin-top: 16px; }
-  .sez { margin-top: 64px; }
-  .sotto { margin-top: 12px; color: var(--testo-secondario); }
-  .dati { margin-top: 12px; color: var(--testo-secondario); max-width: none; }
-  .riga-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-  .apertura h1 { margin-top: 12px; }
+  /* ---------------- ingresso ---------------- */
+  .ingresso { background: var(--superficie); border-bottom: 1px solid var(--bordo);
+    padding-block: 48px 64px; }
+  .ingresso-griglia { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 56px; align-items: center; }
+  .ingresso h1 { font-size: var(--corpo-7); margin-top: 12px; letter-spacing: -0.022em;
+    max-width: 22ch; }
+  .identita { margin-top: 24px; font-size: var(--corpo-3); color: var(--testo-secondario); }
+  .ingresso-foto { margin: 0; }
+  .posa { background: var(--primario-chiaro); border: 1px dashed var(--primario-bordo);
+    border-radius: var(--raggio); aspect-ratio: 4/3; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 24px; }
+  .posa.larga { aspect-ratio: 21/9; margin-top: 24px; }
+  .posa.mappa { aspect-ratio: 16/10; background: var(--superficie-alt); border-color: var(--bordo-controllo); }
+  .posa-sotto { font-size: var(--corpo-1); color: var(--testo-tenue); }
+  .ingresso-foto figcaption { font-size: var(--corpo-1); color: var(--testo-tenue); margin-top: 12px; }
+  figcaption { font-size: var(--corpo-1); color: var(--testo-tenue); margin-top: 12px; max-width: 65ch; }
 
-  /* porte */
-  .porte { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  /* ---------------- le quattro porte ---------------- */
+  .porte-sez { padding-block: 64px; }
+  .porte { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 16px; margin-top: 32px; }
-  .porta { background: var(--superficie); border: 1px solid var(--bordo); border-radius: var(--raggio);
-    padding: 24px; display: flex; flex-direction: column; gap: 12px; }
-  .porta h2 { font-size: var(--corpo-4); }
+  .porta { background: var(--primario-chiaro); border: 1px solid var(--primario-bordo);
+    border-radius: var(--raggio); padding: 28px 24px; display: flex; flex-direction: column;
+    gap: 12px; }
+  .bolla { width: 64px; height: 64px; border-radius: 999px; background: var(--superficie);
+    color: var(--primario); display: grid; place-items: center; margin-bottom: 4px; }
+  .porta h3 { font-size: var(--corpo-4); }
   .porta-testo { font-size: var(--corpo-1); color: var(--testo-secondario); flex: 1; }
-  .freccia { color: var(--primario); font-size: var(--corpo-4); line-height: 1; }
 
-  /* settori */
+  /* ---------------- la fascia dei numeri ---------------- */
+  .fascia-numeri { background: var(--primario-scuro); color: #efeaf6; padding-block: 48px; }
+  .fascia-numeri dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 32px; }
+  .fascia-numeri dt { font-family: var(--font-display); font-weight: 700; font-size: var(--corpo-7);
+    line-height: 1; color: #ffffff; letter-spacing: -0.03em; }
+  .fascia-numeri dd { margin: 8px 0 0; font-size: var(--corpo-1); color: #cbbde3;
+    letter-spacing: 0.04em; }
+
+  /* ---------------- settori ---------------- */
+  .settori-sez { padding-block: 64px; }
+  .titolo-doppio { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; }
+  .titolo-doppio p { color: var(--testo-tenue); font-size: var(--corpo-3); }
   .griglia-settori { list-style: none; display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; margin-top: 24px; }
-  .scheda-settore { background: var(--superficie); border: 1px solid var(--bordo);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 32px; }
+  .settore { background: var(--superficie); border: 1px solid var(--bordo);
     border-radius: var(--raggio); padding: 28px 24px 24px; position: relative; overflow: hidden;
-    display: flex; flex-direction: column; gap: 12px; }
-  .scheda-settore::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+    display: flex; flex-direction: column; gap: 8px; }
+  .settore::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
     background: var(--filetto); }
-  .testa-settore { display: flex; align-items: baseline; justify-content: space-between;
-    gap: 12px; flex-wrap: wrap; }
-  .scheda-settore p { font-size: var(--corpo-1); color: var(--testo-secondario); }
+  .settore-testa { display: flex; align-items: baseline; gap: 8px; }
+  .sedi { font-family: var(--font-display); font-weight: 700; font-size: var(--corpo-6);
+    line-height: 1; color: var(--tinta); letter-spacing: -0.03em; }
+  .sedi-eti { font-size: var(--corpo-1); color: var(--testo-tenue); font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; }
+  .settore h3 { font-size: var(--corpo-4); }
+  .settore p { font-size: var(--corpo-1); color: var(--testo-secondario); flex: 0; }
+  .settore .collegamento { margin-top: auto; padding-top: 8px; }
   .accesso { color: var(--testo-tenue) !important; font-style: italic; }
 
   .s-salute-mentale { --filetto: var(--salute-mentale-grafico); --tinta: var(--salute-mentale-testo); --velo: var(--salute-mentale-fondo); }
@@ -468,7 +487,6 @@ ${scuro}
   .p-critico { background: var(--critico-fondo); color: var(--critico-testo); }
   .p-neutro { background: var(--superficie-alt); color: var(--testo-secondario); border: 1px solid var(--bordo); }
 
-  /* azioni */
   .azione { display: inline-flex; align-items: center; justify-content: center; min-height: 52px;
     padding-inline: 24px; border-radius: var(--raggio); border: 1px solid transparent;
     font-size: var(--corpo-2); font-weight: 600; }
@@ -477,6 +495,7 @@ ${scuro}
   .a-secondario { background: var(--superficie); color: var(--primario); border-color: var(--primario); }
   .a-bianco { background: var(--superficie); color: var(--primario-scuro); }
 
+  .sez { margin-top: 64px; }
   .riquadro-costi { background: var(--primario-chiaro); border: 1px solid var(--primario-bordo);
     border-radius: var(--raggio); padding: 32px; display: grid;
     grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 32px; align-items: start; }
@@ -489,43 +508,59 @@ ${scuro}
   .riquadro-lavoro p { margin-top: 12px; }
   .chiara { color: #cbbde3; }
 
-  /* sicurezza */
+  /* ---------------- piè di pagina ---------------- */
+  .sito-piede { background: #241c33; color: #d9d2e4; margin-top: 64px;
+    padding-block: 48px 24px; font-size: var(--corpo-1); }
+  .piede-alto { display: grid; grid-template-columns: minmax(0, 1.3fr) repeat(3, minmax(0, 1fr));
+    gap: 32px; padding-bottom: 32px; border-bottom: 1px solid #443659; }
+  .marchio-bianco { height: 64px; width: auto; display: block; }
+  .piede-nome { margin-top: 16px; }
+  .piede-nome strong { color: #ffffff; font-size: var(--corpo-2); }
+  .piede-recapiti { margin-top: 12px; color: #b7abc9; }
+  .piede-colonna h2 { font-family: var(--font-testo); font-size: var(--corpo-1); font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #a99cbe; margin-bottom: 12px; }
+  .piede-colonna ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .piede-colonna span { color: #e6e0ee; }
+  .piede-basso { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px;
+    padding-top: 24px; color: #a99cbe; }
+
+  /* ---------------- pagine interne ---------------- */
+  .briciole { padding-top: 16px; font-size: var(--corpo-1); color: var(--testo-tenue); }
+  .briciole span + span::before { content: "› "; color: var(--bordo-controllo); }
+  .apertura { padding-top: 24px; }
+  .occhiello-testo { font-size: var(--corpo-3); color: var(--testo-secondario); margin-top: 16px; }
+  .dati { margin-top: 12px; color: var(--testo-secondario); max-width: none; }
+  .riga-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .apertura h1 { margin-top: 12px; }
+  .disponibilita { font-size: var(--corpo-1); color: var(--testo-secondario); font-weight: 600; }
+  .disponibilita em { font-style: normal; font-weight: 400; color: var(--testo-tenue); }
+
   .sicurezza { margin-top: 24px; background: var(--critico-fondo); border: 1px solid var(--critico-testo);
     border-radius: var(--raggio); padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; }
   .sic-titolo { font-family: var(--font-display); font-size: var(--corpo-4); font-weight: 600;
     color: var(--critico-testo); }
   .sicurezza ul { list-style: none; display: flex; flex-direction: column; gap: 4px;
-    font-size: var(--corpo-2); color: var(--critico-testo); }
+    color: var(--critico-testo); }
   .sicurezza strong { font-family: var(--font-display); font-size: var(--corpo-3); }
   .sic-avviso { font-size: var(--corpo-1); color: var(--critico-testo); }
   .sic-esci { align-self: flex-start; background: var(--critico-testo); color: var(--superficie);
     border-radius: var(--raggio); padding: 8px 16px; font-size: var(--corpo-1); font-weight: 600; }
 
-  /* filtro */
   .filtro { margin-top: 32px; display: flex; flex-direction: column; gap: 24px; }
-  fieldset { border: 1px solid var(--bordo); border-radius: var(--raggio); padding: 16px 24px 24px; margin: 0; }
+  fieldset { border: 1px solid var(--bordo); border-radius: var(--raggio); padding: 16px 24px 24px;
+    margin: 0; background: var(--superficie); }
   legend { font-size: var(--corpo-1); font-weight: 600; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--testo-tenue); padding-inline: 8px; }
   .opzioni { display: flex; flex-wrap: wrap; gap: 8px; }
   .opzione { border: 1px solid var(--bordo-opzione); border-radius: 999px; padding: 8px 16px;
     font-size: var(--corpo-1); color: var(--testo); background: var(--superficie); }
-
   .risultati { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
   .risultato { background: var(--superficie); border: 1px solid var(--bordo); border-radius: var(--raggio);
     border-left: 4px solid var(--filetto); padding: 16px 24px; display: flex; flex-wrap: wrap;
     align-items: center; justify-content: space-between; gap: 12px; }
   .risultato p { font-size: var(--corpo-1); color: var(--testo-secondario); margin-top: 4px; }
 
-  /* scheda */
-  .segnaposto { margin-top: 24px; background: var(--superficie-alt);
-    border: 1px dashed var(--bordo-controllo); border-radius: var(--raggio); aspect-ratio: 21/9;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 8px; text-align: center; padding: 24px; }
-  .segnaposto p { color: var(--testo-tenue); }
-  figcaption { font-size: var(--corpo-1); color: var(--testo-tenue); margin-top: 12px; max-width: 65ch; }
-  .disponibilita { font-size: var(--corpo-1); color: var(--testo-secondario); font-weight: 600; }
-  .disponibilita em { font-style: normal; font-weight: 400; color: var(--testo-tenue); }
-  .impaginato { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 48px;
+  .impaginato { display: grid; grid-template-columns: minmax(0,1fr) 330px; gap: 48px;
     align-items: start; margin-top: 48px; }
   section + section { margin-top: 48px; }
   section h2 { margin-bottom: 16px; }
@@ -554,8 +589,7 @@ ${scuro}
     font-size: var(--corpo-1); color: var(--testo-tenue); flex: none; }
   .nome { font-family: var(--font-display); font-size: var(--corpo-4); font-weight: 600; color: var(--inchiostro); }
   .ruolo { font-size: var(--corpo-1); color: var(--testo-tenue); }
-  .atti { margin: 0; display: grid; grid-template-columns: auto minmax(0,1fr); gap: 8px 16px;
-    font-size: var(--corpo-1); }
+  .atti { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 8px 16px; font-size: var(--corpo-1); }
   .atti dt { font-weight: 600; color: var(--inchiostro); }
   .atti dd { margin: 0; color: var(--testo-secondario); }
   .lato { display: flex; flex-direction: column; gap: 16px; }
@@ -568,10 +602,8 @@ ${scuro}
   .arrivare { padding-left: 24px; font-size: var(--corpo-1); color: var(--testo-secondario); }
   .riservatezza { background: var(--salute-mentale-fondo); border-color: var(--primario-bordo); }
   .avviso-accesso { background: var(--attenzione-fondo); border-radius: var(--raggio); padding: 24px 32px; }
-  .avviso-accesso h2 { color: var(--attenzione-testo); }
-  .avviso-accesso p { color: var(--attenzione-testo); }
+  .avviso-accesso h2, .avviso-accesso p { color: var(--attenzione-testo); }
 
-  /* invianti */
   .impegni { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
     gap: 16px; margin-top: 24px; }
   .impegni li { background: var(--superficie); border: 1px solid var(--bordo);
@@ -579,7 +611,7 @@ ${scuro}
   .impegni strong { font-family: var(--font-display); font-size: var(--corpo-5); color: var(--primario); }
   .impegni span { font-size: var(--corpo-1); color: var(--testo-secondario); }
   .scroll { overflow-x: auto; margin-top: 16px; }
-  table { border-collapse: collapse; width: 100%; font-size: var(--corpo-1); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--corpo-1); background: var(--superficie); }
   th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--bordo); }
   th { font-weight: 600; color: var(--inchiostro); }
   .referenti { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
@@ -588,11 +620,10 @@ ${scuro}
     border-radius: var(--raggio); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
   .mono { font-variant-numeric: tabular-nums; color: var(--primario); font-weight: 600; }
 
-  /* annuncio */
   .retribuzione { margin-top: 24px; background: var(--anziani-fondo); border-radius: var(--raggio);
     padding: 24px 32px; display: flex; flex-direction: column; gap: 4px; }
-  .cifra { font-family: var(--font-display); font-size: var(--corpo-6); font-weight: 600;
-    color: var(--anziani-testo); line-height: 1.1; }
+  .cifra { font-family: var(--font-display); font-size: var(--corpo-6); font-weight: 700;
+    color: var(--anziani-testo); line-height: 1.1; letter-spacing: -0.03em; }
   .retribuzione p { color: var(--anziani-testo); }
   .campo { display: flex; flex-direction: column; gap: 8px; }
   .campo label { font-weight: 600; color: var(--inchiostro); font-size: var(--corpo-2); }
@@ -600,19 +631,17 @@ ${scuro}
   .campo input { min-height: 52px; padding: 12px 16px; border: 1px solid var(--bordo-controllo);
     border-radius: var(--raggio); background: var(--superficie); font: inherit; color: inherit; }
 
-  .sito-piede { background: var(--primario-scuro); color: #d9d2e4; margin-top: 64px;
-    padding-block: 32px; font-size: var(--corpo-1); }
-  .piede-link { display: block; margin-top: 8px; color: #a99cbe; }
-
   @media (max-width: 62rem) {
-    .impaginato, .riquadro-costi { grid-template-columns: 1fr; gap: 32px; }
-    .impaginato { margin-top: 32px; }
+    .ingresso-griglia, .impaginato, .riquadro-costi { grid-template-columns: 1fr; gap: 32px; }
+    .piede-alto { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .riga-testata nav { order: 3; flex-basis: 100%; }
   }
-  .telaio.telefono .impaginato, .telaio.telefono .riquadro-costi { grid-template-columns: 1fr; gap: 24px; }
-  .telaio.telefono .porte, .telaio.telefono .griglia-settori,
-  .telaio.telefono .impegni, .telaio.telefono .referenti { grid-template-columns: 1fr; }
-  .telaio.telefono .riga-testata nav { display: none; }
-  .telaio.telefono .titolo-apertura { font-size: var(--corpo-6); }
+  .telaio.telefono :is(.ingresso-griglia, .impaginato, .riquadro-costi, .porte, .griglia-settori,
+    .impegni, .referenti, .piede-alto) { grid-template-columns: 1fr; }
+  .telaio.telefono .fascia-numeri dl { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .telaio.telefono .riga-testata nav, .telaio.telefono .ricerca { display: none; }
+  .telaio.telefono .ingresso h1 { font-size: var(--corpo-6); }
+  .telaio.telefono .fascia-numeri dt { font-size: var(--corpo-6); }
 </style>
 
 <div class="barra">
