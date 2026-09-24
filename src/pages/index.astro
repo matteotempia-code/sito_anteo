@@ -1,0 +1,296 @@
+---
+import Base from '../layouts/Base.astro';
+import Azione from '../components/Azione.astro';
+import Scheda from '../components/Scheda.astro';
+import Pillola from '../components/Pillola.astro';
+import { SETTORI, SEDI_TOTALI, SERVIZI_UFFICIALI } from '../lib/settori';
+
+/**
+ * La pagina iniziale.
+ *
+ * Il blocco che fa il lavoro vero — le quattro porte, cioè lo smistamento
+ * dei pubblici — sta sopra la piega e ha il titolo più grande. Nel prototipo
+ * era introdotto da un titolino di 15 px mentre la sezione meno azionabile
+ * ne aveva uno di 40: rapporto 1 a 2,7 a favore della parte sbagliata.
+ *
+ * Tutto ciò che è fra parentesi quadre è un campo che deve arrivare dal
+ * gestionale o dalla redazione. Un prototipo che inventa i numeri fa
+ * prendere decisioni sbagliate, e un sito pure.
+ */
+
+const PORTE = [
+  {
+    href: '/servizi',
+    occhiello: 'Per una persona cara',
+    titolo: 'Cerco un servizio',
+    testo:
+      'Racconta la situazione. Al nome tecnico ci pensiamo noi, e ti diciamo anche quando il servizio adatto non è nostro.',
+  },
+  {
+    href: '/invianti',
+    occhiello: 'Per i servizi invianti',
+    titolo: 'Devo segnalare una persona',
+    testo:
+      'Requisiti, capienze, tipologie autorizzative e il referente di settore con il suo numero diretto.',
+  },
+  {
+    href: '/lavora-con-noi',
+    occhiello: 'Per chi cerca lavoro',
+    titolo: 'Cerco lavoro',
+    testo:
+      'Ogni annuncio dichiara la retribuzione, il livello CCNL e i tempi della selezione. Ti rispondiamo sempre.',
+  },
+  {
+    href: '/enti',
+    occhiello: 'Per enti e imprese',
+    titolo: 'Valuto Anteo Impresa Sociale',
+    testo:
+      'Numeri, autorizzazioni, accreditamenti, referenze e un referente per le gare con i tempi di risposta.',
+  },
+];
+---
+
+<Base
+  titolo="Servizi socio-sanitari ed educativi"
+  descrizione="Anteo Impresa Sociale gestisce servizi per anziani, salute mentale, disabilità, minori e dipendenze. Trova il servizio adatto, o parla con una persona."
+>
+  <!-- ============================ le quattro porte ==================== -->
+  <section class="apertura">
+    <div class="guscio">
+      <p class="etichetta">Anteo Impresa Sociale</p>
+      <h1>Di chi stiamo parlando, e che cosa succede?</h1>
+      <p class="occhiello-testo">
+        Da qui si parte dalla situazione, non dalla categoria autorizzativa. Se il servizio giusto
+        non è nostro, te lo diciamo lo stesso.
+      </p>
+
+      <div class="porte">
+        {
+          PORTE.map((p) => (
+            <Scheda href={p.href} class="porta">
+              <p class="etichetta">{p.occhiello}</p>
+              <h2>{p.titolo}</h2>
+              <p>{p.testo}</p>
+              <span class="freccia" aria-hidden="true">
+                →
+              </span>
+            </Scheda>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ i sei settori ======================= -->
+  <section class="settori">
+    <div class="guscio">
+      <h2>Sei settori, {SERVIZI_UFFICIALI} servizi</h2>
+      <p class="sotto">
+        <strong class="numeri">{SERVIZI_UFFICIALI} servizi</strong> è il dato ufficiale, dal
+        gestionale. Le <strong class="numeri">{SEDI_TOTALI} sedi</strong> qui sotto sono i luoghi fisici:
+        sono due grandezze diverse e le teniamo separate.
+      </p>
+
+      <ul class="griglia">
+        {
+          SETTORI.map((s) => (
+            <li>
+              <Scheda href={`/servizi/${s.codice}`} settore={s.codice}>
+                <div class="testa-settore">
+                  <h3>{s.nome}</h3>
+                  <Pillola settore={s.codice}>
+                    <span class="numeri">{s.sedi}</span> sedi
+                  </Pillola>
+                </div>
+                <p>{s.descrizione}</p>
+                {!s.accessoDiretto && (
+                  <p class="accesso">
+                    Si entra tramite il servizio pubblico inviante, non scrivendo a noi.
+                  </p>
+                )}
+              </Scheda>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================ costi e persone ===================== -->
+  <section class="costi">
+    <div class="guscio riquadro">
+      <div>
+        <h2>Quanto costa</h2>
+        <p>
+          Non pubblichiamo un listino, perché sarebbe un numero falso: la quota sanitaria è a carico
+          dell'ASL, la quota alberghiera della famiglia, ed esistono detrazioni e contributi
+          regionali che cambiano da territorio a territorio.
+        </p>
+        <p>
+          La cifra esatta arriva scritta, voce per voce, <strong>entro 48 ore dalla visita</strong> e
+          prima di qualsiasi firma. Prima però parliamo della persona.
+        </p>
+      </div>
+      <div class="azioni">
+        <Azione href="/contatti/richiamata">Fatti richiamare</Azione>
+        <Azione href="/servizi" tono="secondario">Guarda i servizi</Azione>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ lavoro ============================== -->
+  <section class="lavoro">
+    <div class="guscio riquadro-scuro">
+      <div>
+        <p class="etichetta chiara">Lavora con noi</p>
+        <h2>[N] posizioni aperte in [N] province</h2>
+        <p>
+          Retribuzione dichiarata in ogni annuncio, livello CCNL, indennità. Dopo tre anni si può
+          diventare soci — con quello che comporta, spiegato prima.
+        </p>
+      </div>
+      <Azione href="/lavora-con-noi">Vedi le posizioni</Azione>
+    </div>
+  </section>
+</Base>
+
+<style>
+  section + section {
+    margin-top: var(--sp-8);
+  }
+
+  .apertura {
+    padding-top: var(--sp-7);
+  }
+
+  .apertura h1 {
+    font-size: var(--corpo-7);
+    margin-top: var(--sp-2);
+    max-width: 18ch;
+  }
+
+  .occhiello-testo {
+    font-size: var(--corpo-3);
+    color: var(--testo-secondario);
+    margin-top: var(--sp-4);
+  }
+
+  .porte {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-6);
+  }
+
+  .porta h2 {
+    font-size: var(--corpo-4);
+  }
+
+  .porta p {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    flex: 1;
+  }
+
+  .freccia {
+    color: var(--primario);
+    font-size: var(--corpo-4);
+    line-height: 1;
+  }
+
+  .sotto {
+    margin-top: var(--sp-3);
+    color: var(--testo-secondario);
+  }
+
+  .griglia {
+    list-style: none;
+    margin: var(--sp-5) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-4);
+  }
+
+  .testa-settore {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+  }
+
+  .griglia p {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+  }
+
+  .accesso {
+    color: var(--testo-tenue);
+    font-style: italic;
+  }
+
+  .riquadro {
+    background: var(--primario-chiaro);
+    border: 1px solid var(--primario-bordo);
+    border-radius: var(--raggio);
+    padding: var(--sp-6);
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--sp-6);
+    align-items: start;
+  }
+
+  .riquadro p + p {
+    margin-top: var(--sp-3);
+  }
+
+  .azioni {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .riquadro-scuro {
+    background: var(--primario-scuro);
+    border-radius: var(--raggio);
+    padding: var(--sp-6);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    color: #efeaf6;
+  }
+
+  .riquadro-scuro h2 {
+    color: #ffffff;
+    margin-top: var(--sp-2);
+  }
+
+  .riquadro-scuro p {
+    margin-top: var(--sp-3);
+  }
+
+  .chiara {
+    color: #cbbde3;
+  }
+
+  .riquadro-scuro :global(.azione.t-primario) {
+    background: #ffffff;
+    color: var(--primario-scuro);
+  }
+
+  @media (max-width: 52rem) {
+    .riquadro {
+      grid-template-columns: 1fr;
+      padding: var(--sp-5);
+    }
+    .apertura {
+      padding-top: var(--sp-5);
+    }
+    section + section {
+      margin-top: var(--sp-7);
+    }
+  }
+</style>

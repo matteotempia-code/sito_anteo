@@ -1,0 +1,401 @@
+---
+import Base from '../layouts/Base.astro';
+import Azione from '../components/Azione.astro';
+import Scheda from '../components/Scheda.astro';
+import Pillola from '../components/Pillola.astro';
+import Campo from '../components/Campo.astro';
+import { SETTORI } from '../lib/settori';
+
+/**
+ * Il sistema, visibile.
+ *
+ * Questa pagina esiste per essere guardata da chi deve giudicare il lavoro,
+ * e per accorgersi subito quando qualcuno aggiunge un valore fuori scala.
+ * Sta fuori dall'indice: non è una pagina del sito, è uno strumento.
+ */
+
+const CORPI = [
+  { token: '--corpo-7', px: 52, uso: 'Apertura della pagina iniziale. Uno per sito.' },
+  { token: '--corpo-6', px: 38, uso: 'Titolo di pagina (H1).' },
+  { token: '--corpo-5', px: 30, uso: 'Titolo di sezione (H2).' },
+  { token: '--corpo-4', px: 24, uso: 'Titolo di blocco (H3).' },
+  { token: '--corpo-3', px: 19, uso: 'Testo introduttivo, sottotitoli.' },
+  { token: '--corpo-2', px: 17, uso: 'Testo corrente. È il corpo di base.' },
+  { token: '--corpo-1', px: 15, uso: 'Note, didascalie, etichette, pillole.' },
+];
+
+const SPAZI = [1, 2, 3, 4, 5, 6, 7, 8];
+const PX = [4, 8, 12, 16, 24, 32, 48, 64];
+---
+
+<Base
+  titolo="Il sistema"
+  descrizione="I token, i componenti e le regole del nuovo sito di Anteo Impresa Sociale."
+  noindex
+>
+  <div class="guscio pagina">
+    <p class="etichetta">Riferimento interno</p>
+    <h1>Il sistema</h1>
+    <p class="intro">
+      Colore, corpo, spaziatura e raggio arrivano tutti da <code>src/styles/token.css</code>. Nel
+      codice dei componenti non compare mai un valore scritto a mano: è l'unico modo perché i 26
+      corpi tipografici, i 31 valori di spaziatura e i 49 colori trovati nel prototipo non tornino.
+    </p>
+
+    <!-- ===================== colore ===================== -->
+    <section>
+      <h2>Il colore significa settore</h2>
+      <p>
+        Sei tinte, un solo significato, su tutto il sito. Il pubblico si distingue per posizione
+        nella pagina e per forma, non per tinta: nel prototipo gli stessi quattro colori
+        significavano «pubblico» in home e «settore» nell'area invianti, e dopo due clic il lettore
+        non sapeva più cosa volesse dire il verde.
+      </p>
+
+      <ul class="colori">
+        {
+          SETTORI.map((s) => (
+            <li class={`c-${s.codice}`}>
+              <span class="campione" aria-hidden="true" />
+              <div>
+                <strong>{s.nome}</strong>
+                <span class="mini">
+                  grafico · testo · fondo
+                </span>
+              </div>
+              <Pillola settore={s.codice}>testo</Pillola>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="nota">
+        Le versioni <em>-grafico</em> servono a barre, filetti e badge e stanno sopra 3:1. Per il
+        testo esistono le <em>-testo</em>, scurite fino a superare 4,5:1: sotto i 24 px gli accenti
+        del marchio non passano, e usarli come testo sarebbe un difetto di accessibilità, non una
+        scelta grafica.
+      </p>
+    </section>
+
+    <!-- ===================== tipografia ===================== -->
+    <section>
+      <h2>Sette gradi, non uno di più</h2>
+      <p>
+        Fraunces per i titoli, Public Sans per il testo, entrambi auto-ospitati: nessun host di
+        terze parti sul percorso critico.
+      </p>
+
+      <div class="tabella-scorrevole">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Misura</th>
+              <th scope="col">Dove si usa</th>
+              <th scope="col">Come si vede</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              CORPI.map((c) => (
+                <tr>
+                  <td>
+                    <code>{c.token}</code>
+                  </td>
+                  <td class="numeri">{c.px} px</td>
+                  <td>{c.uso}</td>
+                  <td style={`font-size: var(${c.token}); font-family: var(--font-display); line-height: 1.1;`}>
+                    Anteo
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="nota">
+        I tre gradi più alti sono fluidi: si restringono da soli sul telefono, senza punti di
+        rottura da mantenere a mano.
+      </p>
+    </section>
+
+    <!-- ===================== spaziatura ===================== -->
+    <section>
+      <h2>Otto passi di spaziatura</h2>
+      <p>Tutti multipli di 4. Fuori da questi otto non si va.</p>
+      <ul class="spazi">
+        {
+          SPAZI.map((n, i) => (
+            <li>
+              <span class="barra" style={`width: var(--sp-${n})`} aria-hidden="true" />
+              <code>--sp-{n}</code>
+              <span class="numeri mini">{PX[i]} px</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ===================== componenti ===================== -->
+    <section>
+      <h2>I componenti</h2>
+      <p>
+        Uno per ruolo, riusato ovunque. Due raggi soli: <code>12px</code> e pieno.
+      </p>
+
+      <h3>L'azione</h3>
+      <p class="nota">
+        Una sola altezza, 52 px. La gerarchia sta nel tono, non nella dimensione: nel prototipo
+        l'azione secondaria era più grande della primaria.
+      </p>
+      <div class="fila">
+        <Azione href="#sistema">Primaria</Azione>
+        <Azione href="#sistema" tono="secondario">Secondaria</Azione>
+        <Azione href="#sistema" tono="quieto">Quieta</Azione>
+      </div>
+
+      <h3>La pillola</h3>
+      <div class="fila">
+        <Pillola tono="neutro">neutra</Pillola>
+        <Pillola tono="positivo">posti disponibili</Pillola>
+        <Pillola tono="attenzione">dato da aggiornare</Pillola>
+        <Pillola tono="critico">lista d'attesa</Pillola>
+      </div>
+
+      <h3>La scheda</h3>
+      <div class="fila-schede">
+        <Scheda settore="salute-mentale">
+          <h4>Gruppo appartamento</h4>
+          <p class="nota">Il filetto in alto dice il settore, e nient'altro.</p>
+        </Scheda>
+        <Scheda>
+          <h4>Senza filetto</h4>
+          <p class="nota">Quando il contenuto non appartiene a un settore.</p>
+        </Scheda>
+      </div>
+
+      <h3>Il campo</h3>
+      <p class="nota">
+        Bordo a 3:1 contro l'1,77:1 del prototipo. Obbligatorietà scritta a parole, non con un
+        asterisco. Etichetta sempre collegata, mai un placeholder al suo posto.
+      </p>
+      <div class="fila-campi">
+        <Campo
+          id="esempio-nome"
+          etichetta="Il tuo nome"
+          obbligatorio
+          autocomplete="name"
+          aiuto="Serve solo per sapere come chiamarti quando richiamiamo."
+        />
+        <Campo
+          id="esempio-tel"
+          etichetta="Telefono"
+          tipo="tel"
+          obbligatorio
+          autocomplete="tel"
+          inputmode="tel"
+        />
+      </div>
+    </section>
+
+    <!-- ===================== regole ===================== -->
+    <section>
+      <h2>Le regole che il codice fa rispettare</h2>
+      <ul class="regole">
+        <li>
+          <strong>Nessun valore letterale nei componenti.</strong> Colore, corpo, spaziatura e raggio
+          vengono dai token. <code>npm run verifica:token</code> fallisce se ne compare uno.
+        </li>
+        <li>
+          <strong>Ogni coppia testo/fondo sopra 4,5:1, ogni bordo di controllo sopra 3:1.</strong>
+          <code>npm run verifica:contrasto</code> le ricalcola tutte a ogni modifica.
+        </li>
+        <li>
+          <strong>Focus visibile ovunque:</strong> contorno di 3 px con scostamento di 2 px su ogni
+          elemento interattivo, in entrambi i temi.
+        </li>
+        <li>
+          <strong>Una sola navigazione</strong>, identica su tutte le pagine, con l'area invianti
+          sempre presente.
+        </li>
+        <li>
+          <strong>Nessun importo, da nessuna parte.</strong> Di soldi si parla di persona. L'unica
+          cifra pubblicata è la retribuzione negli annunci di lavoro.
+        </li>
+        <li>
+          <strong>Anteo Impresa Sociale, per esteso, sempre.</strong>
+        </li>
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagina {
+    padding-top: var(--sp-6);
+  }
+
+  .intro {
+    font-size: var(--corpo-3);
+    color: var(--testo-secondario);
+    margin-top: var(--sp-4);
+  }
+
+  section {
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-6);
+    border-top: 1px solid var(--bordo);
+  }
+
+  section > p {
+    margin-top: var(--sp-3);
+  }
+
+  h3 {
+    margin-top: var(--sp-6);
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    color: var(--primario);
+    background: var(--primario-chiaro);
+    padding: 0.1em 0.35em;
+    border-radius: var(--sp-1);
+  }
+
+  .nota {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    margin-top: var(--sp-3);
+  }
+
+  .colori {
+    list-style: none;
+    margin: var(--sp-5) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: var(--sp-3);
+  }
+
+  .colori li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+  }
+
+  .colori li > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .campione {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--raggio);
+    flex: none;
+    background: linear-gradient(
+      to bottom,
+      var(--campione-grafico) 0 60%,
+      var(--campione-fondo) 60% 100%
+    );
+  }
+
+  .mini {
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+  }
+
+  .c-salute-mentale {
+    --campione-grafico: var(--salute-mentale-grafico);
+    --campione-fondo: var(--salute-mentale-fondo);
+  }
+  .c-anziani {
+    --campione-grafico: var(--anziani-grafico);
+    --campione-fondo: var(--anziani-fondo);
+  }
+  .c-disabilita {
+    --campione-grafico: var(--disabilita-grafico);
+    --campione-fondo: var(--disabilita-fondo);
+  }
+  .c-minori {
+    --campione-grafico: var(--minori-grafico);
+    --campione-fondo: var(--minori-fondo);
+  }
+  .c-dipendenze {
+    --campione-grafico: var(--dipendenze-grafico);
+    --campione-fondo: var(--dipendenze-fondo);
+  }
+  .c-sociale {
+    --campione-grafico: var(--sociale-grafico);
+    --campione-fondo: var(--sociale-fondo);
+  }
+
+  .spazi {
+    list-style: none;
+    margin: var(--sp-5) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .spazi li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .barra {
+    height: 20px;
+    background: var(--primario);
+    border-radius: var(--sp-1);
+    flex: none;
+  }
+
+  .fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-4);
+  }
+
+  .fila-schede {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-4);
+  }
+
+  .fila-campi {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-4);
+    max-width: 620px;
+  }
+
+  .regole {
+    margin: var(--sp-4) 0 0;
+    padding-left: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .regole li {
+    max-width: var(--misura);
+  }
+
+  table :global(td) {
+    vertical-align: middle;
+  }
+</style>

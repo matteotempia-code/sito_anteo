@@ -1,0 +1,6 @@
+# Progetto Supabase del nuovo sito di Anteo Impresa Sociale.
+# Riferimento remoto: vvrnabzkncbggpragcvq (eu-west-1).
+project_id = "sito-anteo"
+
+[db]
+major_version = 17

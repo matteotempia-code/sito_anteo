@@ -1,0 +1,181 @@
+---
+/**
+ * La testata. Una sola navigazione, identica su tutte le pagine.
+ *
+ * L'audit del prototipo aveva trovato due navigazioni diverse che
+ * convivevano — cinque voci su quattro schermate, quattro su tre — e
+ * l'area invianti che spariva proprio dove serviva. Qui l'elenco è uno,
+ * definito una volta sola, e l'area invianti c'è sempre: per 47 strutture
+ * psichiatriche, per le dipendenze e per buona parte di minori e disabilità
+ * chi sceglie non è la famiglia, è l'operatore del servizio pubblico.
+ *
+ * Il menu sul telefono è un <details>: nessun JavaScript, funziona anche
+ * se lo script non arriva.
+ */
+const VOCI = [
+  { href: '/servizi', testo: 'Trova un servizio' },
+  { href: '/invianti', testo: 'Per i servizi invianti' },
+  { href: '/lavora-con-noi', testo: 'Lavora con noi' },
+  { href: '/chi-siamo', testo: 'Chi siamo' },
+  { href: '/enti', testo: 'Enti e gare' },
+];
+
+const percorso = Astro.url.pathname;
+const attiva = (href: string) => percorso === href || percorso.startsWith(href + '/');
+---
+
+<header class="testata">
+  <div class="guscio riga">
+    <a href="/" class="marchio" aria-label="Anteo Impresa Sociale — vai alla pagina iniziale">
+      <img src="/marchio/logo-lockup.svg" alt="" width="318" height="305" />
+    </a>
+
+    <nav class="larga" aria-label="Navigazione principale">
+      <ul>
+        {
+          VOCI.map((v) => (
+            <li>
+              <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+                {v.testo}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <details class="stretta">
+      <summary aria-label="Apri il menu">
+        <span aria-hidden="true">Menu</span>
+      </summary>
+      <nav aria-label="Navigazione principale">
+        <ul>
+          {
+            VOCI.map((v) => (
+              <li>
+                <a href={v.href} aria-current={attiva(v.href) ? 'page' : undefined}>
+                  {v.testo}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .testata {
+    background: var(--superficie);
+    border-bottom: 1px solid var(--bordo);
+  }
+
+  .riga {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    min-height: 76px;
+    padding-block: var(--sp-3);
+  }
+
+  .marchio {
+    display: block;
+    flex: none;
+  }
+  .marchio img {
+    height: 52px;
+    width: auto;
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+  }
+
+  nav a {
+    display: inline-block;
+    padding-block: var(--sp-2);
+    color: var(--testo-secondario);
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-medio);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--primario);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--primario);
+    font-weight: var(--peso-forte);
+    box-shadow: inset 0 -2px 0 var(--primario);
+  }
+
+  .stretta {
+    display: none;
+  }
+
+  details summary {
+    list-style: none;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--sp-3);
+    border: 1px solid var(--bordo-controllo);
+    border-radius: var(--raggio);
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-forte);
+    color: var(--inchiostro);
+  }
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[open] nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: var(--superficie);
+    border-bottom: 1px solid var(--bordo);
+    box-shadow: var(--ombra);
+    padding: var(--sp-4) var(--gutter) var(--sp-5);
+    z-index: 20;
+  }
+
+  details[open] nav ul {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  details[open] nav a {
+    display: block;
+    padding-block: var(--sp-3);
+    font-size: var(--corpo-2);
+    border-bottom: 1px solid var(--bordo);
+  }
+
+  @media (max-width: 62rem) {
+    .larga {
+      display: none;
+    }
+    .stretta {
+      display: block;
+    }
+    .testata {
+      position: relative;
+    }
+    .marchio img {
+      height: 44px;
+    }
+  }
+</style>

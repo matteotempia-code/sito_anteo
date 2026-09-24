@@ -1,0 +1,82 @@
+---
+/**
+ * La scheda. Una sola card in tutto il sito, un solo raggio.
+ *
+ * Il filetto colorato in alto dice il SETTORE. Non dice il pubblico: il
+ * pubblico si distingue per posizione nella pagina, non per tinta. È la
+ * regola che l'audit del prototipo aveva visto violata — gli stessi quattro
+ * colori significavano "pubblico" in home e "settore" nell'area invianti.
+ */
+import type { CodiceSettore } from '../lib/settori';
+
+interface Props {
+  href?: string;
+  settore?: CodiceSettore;
+  filetto?: boolean;
+  class?: string;
+}
+
+const { href, settore, filetto = Boolean(settore), class: classe = '' } = Astro.props;
+const Tag = href ? 'a' : 'article';
+const classi = ['scheda', filetto ? 'con-filetto' : '', settore ? `s-${settore}` : '', classe]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classi} href={href}>
+  <slot />
+</Tag>
+
+<style>
+  .scheda {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    background: var(--superficie);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    padding: var(--sp-5);
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  a.scheda {
+    transition: border-color var(--transizione), box-shadow var(--transizione);
+  }
+  a.scheda:hover {
+    border-color: var(--bordo-controllo);
+    box-shadow: var(--ombra);
+  }
+
+  .con-filetto::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--filetto, var(--primario));
+  }
+  .con-filetto {
+    padding-top: calc(var(--sp-5) + 4px);
+  }
+
+  .s-salute-mentale {
+    --filetto: var(--salute-mentale-grafico);
+  }
+  .s-anziani {
+    --filetto: var(--anziani-grafico);
+  }
+  .s-disabilita {
+    --filetto: var(--disabilita-grafico);
+  }
+  .s-minori {
+    --filetto: var(--minori-grafico);
+  }
+  .s-dipendenze {
+    --filetto: var(--dipendenze-grafico);
+  }
+  .s-sociale {
+    --filetto: var(--sociale-grafico);
+  }
+</style>

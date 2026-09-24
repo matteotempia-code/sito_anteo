@@ -1,0 +1,57 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/public-sans';
+import '../styles/token.css';
+import '../styles/base.css';
+import Testata from '../components/Testata.astro';
+import Piede from '../components/Piede.astro';
+
+/**
+ * Lo scheletro di ogni pagina.
+ *
+ * I caratteri sono auto-ospitati (pacchetti fontsource): nessun host di
+ * terze parti sul percorso critico. Il sito attuale carica ancora il font
+ * delle icone dal server dimostrativo del fornitore del tema — se quel
+ * server si spegne, le icone spariscono da anteocoop.it e nessuno in Anteo
+ * Impresa Sociale può rimediare. Qui non succede.
+ */
+interface Props {
+  titolo: string;
+  descrizione: string;
+  /** Fuori dall'indice: aree riservate, pagine di servizio. */
+  noindex?: boolean;
+}
+
+const { titolo, descrizione, noindex = false } = Astro.props;
+const canonico = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titolo} — Anteo Impresa Sociale</title>
+    <meta name="description" content={descrizione} />
+    <link rel="canonical" href={canonico} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:site_name" content="Anteo Impresa Sociale" />
+    <meta property="og:title" content={titolo} />
+    <meta property="og:description" content={descrizione} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonico} />
+    <meta property="og:locale" content="it_IT" />
+    <meta name="theme-color" content="#684a90" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15111d" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/marchio/logo-mark.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <a class="salta" href="#contenuto">Salta al contenuto</a>
+    <Testata />
+    <main id="contenuto">
+      <slot />
+    </main>
+    <Piede />
+  </body>
+</html>

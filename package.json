@@ -1,0 +1,22 @@
+{
+  "name": "sito-anteo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Nuovo sito di Anteo Impresa Sociale",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verifica:contrasto": "node scripts/verifica-contrasto.mjs",
+    "verifica:token": "node scripts/verifica-token.mjs",
+    "verifica": "npm run verifica:contrasto && npm run verifica:token"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.1.0",
+    "@fontsource-variable/public-sans": "^5.1.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "astro": "^5.1.0"
+  },
+  "devDependencies": {}
+}

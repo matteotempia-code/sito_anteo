@@ -1,0 +1,118 @@
+---
+/**
+ * Il campo da compilare.
+ *
+ * Tre cose non sono negoziabili, e sono qui dentro invece che nelle linee
+ * guida perché una linea guida non si fa rispettare da sola:
+ *  · l'etichetta è sempre collegata al campo, mai un placeholder al suo posto;
+ *  · l'obbligatorietà è dichiarata a parole, non con un asterisco;
+ *  · il bordo sta sopra 3:1, perché il nostro pubblico sono spesso familiari
+ *    ultrasessantenni e un bordo a 1,77:1 è di fatto invisibile.
+ */
+interface Props {
+  id: string;
+  etichetta: string;
+  tipo?: 'text' | 'tel' | 'email' | 'date' | 'textarea';
+  nome?: string;
+  aiuto?: string;
+  obbligatorio?: boolean;
+  autocomplete?: string;
+  inputmode?: string;
+  placeholder?: string;
+}
+
+const {
+  id,
+  etichetta,
+  tipo = 'text',
+  nome,
+  aiuto,
+  obbligatorio = false,
+  autocomplete,
+  inputmode,
+  placeholder,
+} = Astro.props;
+
+const idAiuto = aiuto ? `${id}-aiuto` : undefined;
+---
+
+<div class="campo">
+  <label for={id}>
+    {etichetta}
+    {obbligatorio ? <span class="obbligo">(obbligatorio)</span> : <span class="facolt">(facoltativo)</span>}
+  </label>
+  {aiuto && <p id={idAiuto} class="aiuto">{aiuto}</p>}
+  {
+    tipo === 'textarea' ? (
+      <textarea
+        id={id}
+        name={nome ?? id}
+        rows="4"
+        required={obbligatorio}
+        aria-describedby={idAiuto}
+        placeholder={placeholder}
+      />
+    ) : (
+      <input
+        id={id}
+        name={nome ?? id}
+        type={tipo}
+        required={obbligatorio}
+        aria-describedby={idAiuto}
+        autocomplete={autocomplete}
+        inputmode={inputmode}
+        placeholder={placeholder}
+      />
+    )
+  }
+</div>
+
+<style>
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  label {
+    font-size: var(--corpo-2);
+    font-weight: var(--peso-forte);
+    color: var(--inchiostro);
+    line-height: var(--interlinea-media);
+  }
+
+  .obbligo,
+  .facolt {
+    font-weight: var(--peso-normale);
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+  }
+
+  .aiuto {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    margin: 0;
+  }
+
+  input,
+  textarea {
+    min-height: 52px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--bordo-controllo);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+    font-size: var(--corpo-2);
+    line-height: var(--interlinea-media);
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+    padding-block: var(--sp-3);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--testo-tenue);
+  }
+</style>

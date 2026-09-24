@@ -1,0 +1,81 @@
+---
+/**
+ * La pillola. Una sola, per ogni cosa che si etichetta: settore, stato,
+ * priorità. L'audit del prototipo ne aveva trovate quattro varianti della
+ * stessa forma.
+ */
+import type { CodiceSettore } from '../lib/settori';
+
+interface Props {
+  /** Colora la pillola con la tinta del settore. */
+  settore?: CodiceSettore;
+  /** Stati generici, quando non si tratta di un settore. */
+  tono?: 'neutro' | 'positivo' | 'attenzione' | 'critico';
+  class?: string;
+}
+
+const { settore, tono = 'neutro', class: classe = '' } = Astro.props;
+const classi = ['pillola', settore ? `s-${settore}` : `t-${tono}`, classe]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<span class={classi}><slot /></span>
+
+<style>
+  .pillola {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-1) var(--sp-3);
+    border-radius: var(--raggio-pieno);
+    border: 1px solid transparent;
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-forte);
+    line-height: var(--interlinea-media);
+    white-space: nowrap;
+  }
+
+  .t-neutro {
+    background: var(--superficie-alt);
+    border-color: var(--bordo);
+    color: var(--testo-secondario);
+  }
+  .t-positivo {
+    background: var(--positivo-fondo);
+    color: var(--positivo-testo);
+  }
+  .t-attenzione {
+    background: var(--attenzione-fondo);
+    color: var(--attenzione-testo);
+  }
+  .t-critico {
+    background: var(--critico-fondo);
+    color: var(--critico-testo);
+  }
+
+  .s-salute-mentale {
+    background: var(--salute-mentale-fondo);
+    color: var(--salute-mentale-testo);
+  }
+  .s-anziani {
+    background: var(--anziani-fondo);
+    color: var(--anziani-testo);
+  }
+  .s-disabilita {
+    background: var(--disabilita-fondo);
+    color: var(--disabilita-testo);
+  }
+  .s-minori {
+    background: var(--minori-fondo);
+    color: var(--minori-testo);
+  }
+  .s-dipendenze {
+    background: var(--dipendenze-fondo);
+    color: var(--dipendenze-testo);
+  }
+  .s-sociale {
+    background: var(--sociale-fondo);
+    color: var(--sociale-testo);
+  }
+</style>

@@ -1,0 +1,251 @@
+/* =====================================================================
+   Anteo Impresa Sociale — i token del sistema
+   =====================================================================
+   Una regola sola: nel codice dei componenti non compare mai un valore
+   letterale. Colore, corpo, spaziatura e raggio arrivano tutti da qui.
+   L'audit del prototipo aveva contato 26 corpi tipografici, 31 valori di
+   spaziatura, 12 raggi e 49 colori su otto schermate: quel disordine si
+   evita solo rendendo scomodo scrivere un numero a mano.
+
+   VINCOLI DI CONTRASTO, verificati da `npm run verifica:contrasto`:
+   · ogni coppia testo/fondo ≥ 4,5:1 (WCAG 2.2 AA)
+   · ogni bordo di controllo ≥ 3:1
+   Gli accenti del marchio sotto i 24 px non passano come testo: per il
+   testo esistono le versioni scurite, che finiscono in -testo.
+   ===================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- il marchio, dai valori esatti del vettoriale ---------- */
+  --marchio-viola: #684a90;
+  --marchio-rosso: #e0293f;
+  --marchio-verde: #48a345;
+  --marchio-arancio: #e9501a;
+  --marchio-giallo: #f9af25;
+
+  /* ---------- colore primario ---------- */
+  --primario: #684a90;
+  --primario-scuro: #4a3468;
+  --primario-chiaro: #f2eef7;
+  --primario-bordo: #d9cee8;
+
+  /* ---------- neutri, con una leggera deriva verso il viola ---------- */
+  --fondo: #fbfaf8;
+  --superficie: #ffffff;
+  --superficie-alt: #f5f2ee;
+  --inchiostro: #1a1523;
+  --testo: #2e2838;
+  --testo-secondario: #4f4a58;
+  --testo-tenue: #635c6e;
+  --bordo: #e4dfd6;
+  --bordo-controllo: #8c8478; /* ≥ 3:1: i campi da compilare si devono vedere */
+  --bordo-opzione: #9a9186; /* opzioni non selezionate */
+
+  /* ---------- i sei settori ----------
+     Il colore significa SETTORE e nient'altro, su tutto il sito.
+     Il pubblico si distingue per posizione e forma, non per tinta.
+     -grafico: barre, badge, filetti (≥ 3:1, non testo)
+     -testo:   testo e icone piccole (≥ 4,5:1)
+     -fondo:   riempimenti tenui                                        */
+  --salute-mentale-grafico: #684a90;
+  --salute-mentale-testo: #4a3468;
+  --salute-mentale-fondo: #f2eef7;
+
+  --anziani-grafico: #48a345;
+  --anziani-testo: #265e24;
+  --anziani-fondo: #eaf3ea;
+
+  --disabilita-grafico: #e9501a;
+  --disabilita-testo: #a8350e;
+  --disabilita-fondo: #fbefe9;
+
+  /* Il giallo del marchio su bianco sta a 1,88:1: come segno che identifica
+     un settore sarebbe invisibile. Qui la tinta grafica è un'ambra scurita
+     (3,43:1). Il giallo puro resta in --marchio-giallo per le grandi
+     campiture, dove non deve distinguere nulla da solo. */
+  --minori-grafico: #c07c06;
+  --minori-testo: #6f4e05;
+  --minori-fondo: #fbf3e0;
+
+  --dipendenze-grafico: #e0293f;
+  --dipendenze-testo: #a8172a;
+  --dipendenze-fondo: #fbeaec;
+
+  --sociale-grafico: #a34a7d;
+  --sociale-testo: #6b2e55;
+  --sociale-fondo: #f7edf3;
+
+  /* ---------- stati ---------- */
+  --positivo-testo: #265e24;
+  --positivo-fondo: #eaf3ea;
+  --attenzione-testo: #6f4e05;
+  --attenzione-fondo: #fbf3e0;
+  --critico-testo: #a8172a;
+  --critico-fondo: #fbeaec;
+
+  /* ---------- tipografia: sette gradi, non uno di più ---------- */
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-testo: 'Public Sans Variable', 'Public Sans', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+
+  --corpo-1: 0.9375rem; /* 15 — note, didascalie, etichette */
+  --corpo-2: 1.0625rem; /* 17 — testo corrente */
+  --corpo-3: 1.1875rem; /* 19 — testo introduttivo */
+  --corpo-4: 1.5rem; /* 24 — titolo di blocco */
+  --corpo-5: clamp(1.5rem, 1.1rem + 1.8vw, 1.875rem); /* 30 — titolo di sezione */
+  --corpo-6: clamp(1.75rem, 1.15rem + 2.8vw, 2.375rem); /* 38 — titolo di pagina */
+  --corpo-7: clamp(2.125rem, 1.2rem + 4.2vw, 3.25rem); /* 52 — apertura */
+
+  --peso-normale: 400;
+  --peso-medio: 500;
+  --peso-forte: 600;
+
+  --interlinea-stretta: 1.12;
+  --interlinea-media: 1.3;
+  --interlinea-larga: 1.6;
+
+  --spaziatura-lettere-etichetta: 0.08em;
+  --misura: 65ch; /* la riga di testo non supera questa larghezza */
+
+  /* ---------- spaziatura: otto passi ---------- */
+  --sp-1: 0.25rem; /* 4 */
+  --sp-2: 0.5rem; /* 8 */
+  --sp-3: 0.75rem; /* 12 */
+  --sp-4: 1rem; /* 16 */
+  --sp-5: 1.5rem; /* 24 */
+  --sp-6: 2rem; /* 32 */
+  --sp-7: 3rem; /* 48 */
+  --sp-8: 4rem; /* 64 */
+
+  /* ---------- raggi: due ---------- */
+  --raggio: 12px;
+  --raggio-pieno: 999px;
+
+  /* ---------- il resto ---------- */
+  --ombra: 0 1px 2px rgb(26 21 35 / 0.04), 0 2px 8px rgb(26 21 35 / 0.05);
+  --focus: 3px;
+  --focus-scostamento: 2px;
+  --larghezza-guscio: 1180px;
+  --gutter: var(--sp-4);
+  --transizione: 160ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: var(--sp-5);
+  }
+}
+
+/* =====================================================================
+   Tema scuro. Il fondo non diventa nero: resta un viola molto desaturato,
+   così il marchio non galleggia su un buco. Gli accenti si schiariscono,
+   perché su fondo scuro il rapporto si inverte.
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='chiaro']) {
+    color-scheme: dark;
+
+    --primario: #b396e2;
+    --primario-scuro: #c9b4ec;
+    --primario-chiaro: #2a2139;
+    --primario-bordo: #443659;
+
+    --fondo: #15111d;
+    --superficie: #1e1929;
+    --superficie-alt: #261f33;
+    --inchiostro: #f4f0f8;
+    --testo: #ece7f2;
+    --testo-secondario: #b7afc5;
+    --testo-tenue: #9d95ab;
+    --bordo: #332b43;
+    --bordo-controllo: #8a819b;
+    --bordo-opzione: #7d7490;
+
+    --salute-mentale-grafico: #b396e2;
+    --salute-mentale-testo: #c9b4ec;
+    --salute-mentale-fondo: #2a2139;
+
+    --anziani-grafico: #6dc76a;
+    --anziani-testo: #8ece8b;
+    --anziani-fondo: #1c2b1c;
+
+    --disabilita-grafico: #f5794a;
+    --disabilita-testo: #f0916b;
+    --disabilita-fondo: #33211a;
+
+    --minori-grafico: #f9af25;
+    --minori-testo: #e5bc63;
+    --minori-fondo: #2e2513;
+
+    --dipendenze-grafico: #ef5568;
+    --dipendenze-testo: #f08a97;
+    --dipendenze-fondo: #331a1e;
+
+    --sociale-grafico: #c874a4;
+    --sociale-testo: #d79cbd;
+    --sociale-fondo: #2d1f28;
+
+    --positivo-testo: #8ece8b;
+    --positivo-fondo: #1c2b1c;
+    --attenzione-testo: #e5bc63;
+    --attenzione-fondo: #2e2513;
+    --critico-testo: #f08a97;
+    --critico-fondo: #331a1e;
+
+    --ombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 10px rgb(0 0 0 / 0.35);
+  }
+}
+
+:root[data-tema='scuro'] {
+  color-scheme: dark;
+
+  --primario: #b396e2;
+  --primario-scuro: #c9b4ec;
+  --primario-chiaro: #2a2139;
+  --primario-bordo: #443659;
+
+  --fondo: #15111d;
+  --superficie: #1e1929;
+  --superficie-alt: #261f33;
+  --inchiostro: #f4f0f8;
+  --testo: #ece7f2;
+  --testo-secondario: #b7afc5;
+  --testo-tenue: #9d95ab;
+  --bordo: #332b43;
+  --bordo-controllo: #8a819b;
+  --bordo-opzione: #7d7490;
+
+  --salute-mentale-grafico: #b396e2;
+  --salute-mentale-testo: #c9b4ec;
+  --salute-mentale-fondo: #2a2139;
+
+  --anziani-grafico: #6dc76a;
+  --anziani-testo: #8ece8b;
+  --anziani-fondo: #1c2b1c;
+
+  --disabilita-grafico: #f5794a;
+  --disabilita-testo: #f0916b;
+  --disabilita-fondo: #33211a;
+
+  --minori-grafico: #f9af25;
+  --minori-testo: #e5bc63;
+  --minori-fondo: #2e2513;
+
+  --dipendenze-grafico: #ef5568;
+  --dipendenze-testo: #f08a97;
+  --dipendenze-fondo: #331a1e;
+
+  --sociale-grafico: #c874a4;
+  --sociale-testo: #d79cbd;
+  --sociale-fondo: #2d1f28;
+
+  --positivo-testo: #8ece8b;
+  --positivo-fondo: #1c2b1c;
+  --attenzione-testo: #e5bc63;
+  --attenzione-fondo: #2e2513;
+  --critico-testo: #f08a97;
+  --critico-fondo: #331a1e;
+
+  --ombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 10px rgb(0 0 0 / 0.35);
+}

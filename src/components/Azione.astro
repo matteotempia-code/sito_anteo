@@ -1,0 +1,84 @@
+---
+/**
+ * L'azione. Una sola forma primaria in tutto il sito.
+ *
+ * L'audit del prototipo aveva trovato sei altezze diverse per la stessa CTA
+ * (48, 52, 54, 56, 58, 62 px) e un caso in cui l'azione secondaria era più
+ * grande della primaria. Qui l'altezza è una, e la gerarchia è nel tono,
+ * non nella dimensione.
+ */
+interface Props {
+  href?: string;
+  tono?: 'primario' | 'secondario' | 'quieto';
+  tipo?: 'button' | 'submit';
+  larga?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  tono = 'primario',
+  tipo = 'button',
+  larga = false,
+  class: classe = '',
+  ...resto
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const classi = ['azione', `t-${tono}`, larga ? 'larga' : '', classe].filter(Boolean).join(' ');
+---
+
+<Tag class={classi} href={href} type={href ? undefined : tipo} {...resto}>
+  <slot />
+</Tag>
+
+<style>
+  .azione {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: 52px;
+    padding-inline: var(--sp-5);
+    border-radius: var(--raggio);
+    border: 1px solid transparent;
+    font-size: var(--corpo-2);
+    font-weight: var(--peso-forte);
+    line-height: var(--interlinea-media);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--transizione), border-color var(--transizione);
+  }
+
+  .larga {
+    width: 100%;
+  }
+
+  .t-primario {
+    background: var(--primario);
+    color: var(--superficie);
+  }
+  .t-primario:hover {
+    background: var(--primario-scuro);
+  }
+
+  .t-secondario {
+    background: var(--superficie);
+    color: var(--primario);
+    border-color: var(--primario);
+  }
+  .t-secondario:hover {
+    background: var(--primario-chiaro);
+  }
+
+  .t-quieto {
+    background: transparent;
+    color: var(--testo-secondario);
+    border-color: var(--bordo-controllo);
+  }
+  .t-quieto:hover {
+    background: var(--superficie-alt);
+  }
+</style>

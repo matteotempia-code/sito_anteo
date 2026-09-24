@@ -1,0 +1,175 @@
+---
+/**
+ * Il piè di pagina. Fondo scuro, marchio in negativo.
+ *
+ * Il nome per esteso, sempre: l'organizzazione si chiama Anteo Impresa
+ * Sociale, mai Anteo da solo.
+ */
+const ANNO = new Date().getFullYear();
+
+const COLONNE = [
+  {
+    titolo: 'Servizi',
+    voci: [
+      { href: '/servizi/salute-mentale', testo: 'Salute mentale' },
+      { href: '/servizi/anziani', testo: 'Anziani' },
+      { href: '/servizi/disabilita', testo: 'Disabilità' },
+      { href: '/servizi/minori', testo: 'Minori e famiglie' },
+      { href: '/servizi/dipendenze', testo: 'Dipendenze' },
+      { href: '/servizi/sociale', testo: 'Interventi sociali' },
+    ],
+  },
+  {
+    titolo: 'Per chi lavora con noi',
+    voci: [
+      { href: '/invianti', testo: 'Servizi invianti' },
+      { href: '/enti', testo: 'Enti e gare' },
+      { href: '/lavora-con-noi', testo: 'Posizioni aperte' },
+      { href: '/lavora-con-noi/diventare-socio', testo: 'Diventare socio' },
+    ],
+  },
+  {
+    titolo: 'Trasparenza',
+    voci: [
+      { href: '/chi-siamo/bilancio-sociale', testo: 'Bilancio sociale' },
+      { href: '/chi-siamo/amministrazione-trasparente', testo: 'Amministrazione trasparente' },
+      { href: '/chi-siamo/certificazioni', testo: 'Certificazioni e modello 231' },
+      { href: '/segnalazioni', testo: 'Segnalazioni (whistleblowing)' },
+    ],
+  },
+];
+---
+
+<footer class="piede">
+  <div class="guscio">
+    <div class="alto">
+      <div class="identita">
+        <img
+          src="/marchio/logo-lockup-bianco.svg"
+          alt="Anteo Impresa Sociale"
+          width="318"
+          height="305"
+        />
+        <p class="frase">
+          Cooperativa sociale. Dal 1990 gestiamo servizi socio-sanitari ed educativi con le persone
+          che ci lavorano dentro.
+        </p>
+      </div>
+
+      {
+        COLONNE.map((c) => (
+          <nav class="colonna" aria-label={c.titolo}>
+            <h2>{c.titolo}</h2>
+            <ul>
+              {c.voci.map((v) => (
+                <li>
+                  <a href={v.href}>{v.testo}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="basso">
+      <p>
+        <strong>Anteo Impresa Sociale</strong> — società cooperativa sociale · Sede legale in Biella
+      </p>
+      <ul class="legali">
+        <li><a href="/privacy">Informativa privacy</a></li>
+        <li><a href="/cookie">Cookie</a></li>
+        <li><a href="/accessibilita">Dichiarazione di accessibilità</a></li>
+        <li><a href="/contatti">Contatti</a></li>
+      </ul>
+      <p class="nota">© {ANNO} Anteo Impresa Sociale</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .piede {
+    background: #2a2139;
+    color: #d9d2e4;
+    margin-top: var(--sp-8);
+    padding-block: var(--sp-7) var(--sp-5);
+    font-size: var(--corpo-1);
+  }
+
+  .alto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: var(--sp-6) var(--sp-5);
+    padding-bottom: var(--sp-6);
+    border-bottom: 1px solid #43385a;
+  }
+
+  .identita img {
+    height: 68px;
+    width: auto;
+  }
+
+  .frase {
+    margin-top: var(--sp-4);
+    max-width: 34ch;
+    line-height: var(--interlinea-larga);
+    color: #c4bbd2;
+  }
+
+  .colonna h2 {
+    font-family: var(--font-testo);
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-lettere-etichetta);
+    text-transform: uppercase;
+    color: #a99cbe;
+    margin-bottom: var(--sp-3);
+  }
+
+  .colonna ul,
+  .legali {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .colonna li + li {
+    margin-top: var(--sp-2);
+  }
+
+  .piede a {
+    color: #e6e0ee;
+    text-decoration: none;
+  }
+  .piede a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .piede a:focus-visible {
+    outline-color: #d9cee8;
+  }
+
+  .basso {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3) var(--sp-5);
+    padding-top: var(--sp-5);
+  }
+
+  .basso p {
+    margin: 0;
+    max-width: none;
+  }
+
+  .legali {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+  }
+
+  .nota {
+    color: #a99cbe;
+  }
+</style>
