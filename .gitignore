@@ -5,3 +5,6 @@ dist/
 .env.local
 .vercel/
 .DS_Store
+
+dist-scheda.html
+dist-sistema.html

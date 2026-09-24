@@ -1,0 +1,493 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import Azione from '../../../../components/Azione.astro';
+import Pillola from '../../../../components/Pillola.astro';
+import { scheda as s } from '../../../../content/rsa-gran-torino.js';
+
+/**
+ * La scheda di una sede, rifatta con i componenti veri.
+ *
+ * L'indirizzo web è quello vero: /servizi/anziani/torino/rsa-gran-torino.
+ * Nel prototipo il percorso di navigazione mostrava quattro livelli ma
+ * puntavano tutti alla stessa pagina — la gerarchia era disegnata, non
+ * esisteva. Senza quella non esistono nemmeno le pagine di settore e di
+ * provincia, che sono l'unico modo per intercettare chi cerca «RSA Torino».
+ *
+ * `ResidentialCare` di schema.org è marcato qui: senza, Google non sa che
+ * cos'è questa pagina.
+ */
+
+const datiStrutturati = {
+  '@context': 'https://schema.org',
+  '@type': 'ResidentialCare',
+  name: s.nome,
+  parentOrganization: { '@type': 'Organization', name: 'Anteo Impresa Sociale' },
+  // L'indirizzo compare SOLO se la sede è pubblicabile. Per un gruppo
+  // appartamento in condominio questo ramo non esiste proprio.
+  ...(s.indirizzoPubblicabile
+    ? {
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: s.indirizzo,
+          addressLocality: s.comune,
+          addressRegion: s.provincia,
+          addressCountry: 'IT',
+        },
+      }
+    : {}),
+  availableService: { '@type': 'MedicalTherapy', name: s.tipologia },
+};
+---
+
+<Base
+  titolo={`${s.nome}, ${s.comune}`}
+  descrizione={`${s.tipologia} a ${s.comune}. ${s.perChi.si.slice(0, 110)}…`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datiStrutturati)} />
+
+  <nav class="briciole guscio" aria-label="Percorso">
+    <ol>
+      {
+        s.percorso.map((voce, i) => (
+          <li>
+            {s.urlPercorso[i] ? <a href={s.urlPercorso[i]}>{voce}</a> : <span aria-current="page">{voce}</span>}
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <!-- ============================== testata della scheda ============== -->
+  <header class="guscio apertura">
+    <div class="riga-meta">
+      <Pillola settore={s.settore}>{s.tipologia}</Pillola>
+      <span class="disponibilita">
+        {s.disponibilita.testoSegnaposto}
+        <span class="quando">· dal gestionale, con la data di aggiornamento</span>
+      </span>
+    </div>
+    <h1>{s.nome}</h1>
+    <p class="dati numeri">
+      {s.indirizzo} · <strong>{s.postiLetto}</strong> posti letto · aperta nel {s.apertaNel}
+    </p>
+  </header>
+
+  <!-- ============================== galleria ========================== -->
+  <div class="guscio">
+    <figure class="galleria">
+      <div class="segnaposto">
+        <p class="etichetta">{s.galleria.segnaposto}</p>
+        <p>{s.galleria.didascalia}</p>
+      </div>
+      <figcaption>{s.galleria.nota}</figcaption>
+    </figure>
+  </div>
+
+  <div class="guscio impaginato">
+    <div class="colonna-testo">
+      <!-- ========================= per chi è, e per chi no ============= -->
+      <section>
+        <h2>{s.perChi.titolo}</h2>
+        <p>{s.perChi.si}</p>
+        <p class="non-e">{s.perChi.no}</p>
+      </section>
+
+      <!-- ========================= una giornata ======================== -->
+      <section>
+        <h2>Una giornata qui</h2>
+        <ol class="giornata">
+          {
+            s.giornata.map(([ora, cosa]) => (
+              <li>
+                <span class="ora numeri">{ora}</span>
+                <span>{cosa}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <!-- ========================= i costi ============================= -->
+      <section class="costi">
+        <h2>{s.costi.titolo}</h2>
+        {s.costi.testo.map((t) => <p>{t}</p>)}
+        <ul class="voci">
+          {s.costi.voci.map((v) => <li>{v}</li>)}
+        </ul>
+      </section>
+
+      <!-- ========================= come si entra ======================= -->
+      <section>
+        <h2>Come si entra</h2>
+        <ol class="passi">
+          {
+            s.ingresso.map(([titolo, testo], i) => (
+              <li>
+                <span class="numero numeri" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <div>
+                  <h3>{titolo}</h3>
+                  <p>{testo}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="nota">
+          <a href="/servizi/anziani/documenti-per-l-ingresso">Documenti da portare: l’elenco completo</a>
+        </p>
+      </section>
+
+      <!-- ========================= chi risponde ======================= -->
+      <section>
+        <h2>Chi risponde, qui dentro</h2>
+        <div class="referente">
+          <div class="ritratto" aria-hidden="true">{s.direttore.foto ? '' : '[FOTO]'}</div>
+          <div>
+            <p class="nome">{s.direttore.nome}</p>
+            <p class="ruolo">{s.direttore.ruolo} · qui dal {s.direttore.dal}</p>
+            <p>{s.direttore.nota}</p>
+          </div>
+        </div>
+        <p class="nota">
+          Nome e fotografia compaiono solo con due consensi distinti, e il gestionale non li
+          restituisce se mancano: il campo non arriva vuoto, non arriva.
+        </p>
+      </section>
+
+      <!-- ========================= autorizzazioni ===================== -->
+      <section>
+        <h2>Autorizzazione e qualità</h2>
+        <dl class="atti">
+          {
+            s.autorizzazioni.map(([voce, valore]) => (
+              <>
+                <dt>{voce}</dt>
+                <dd>{valore}</dd>
+              </>
+            ))
+          }
+        </dl>
+        <p class="nota">{s.cartaDeiServizi}</p>
+        <p class="nota">
+          <a href="/reclami">Reclami e segnalazioni: come si presentano</a>
+        </p>
+      </section>
+    </div>
+
+    <!-- ============================ colonna laterale ================== -->
+    <aside class="colonna-lato">
+      <div class="riquadro">
+        <h2>{s.visita.titolo}</h2>
+        <p>{s.visita.testo}</p>
+        <Azione href="/contatti/visita" larga>Prenota una visita</Azione>
+        <Azione href="/contatti/richiamata" tono="secondario" larga>Fatti richiamare</Azione>
+      </div>
+
+      <div class="riquadro quieto">
+        <h2>Dove si trova</h2>
+        <p class="indirizzo">{s.indirizzo}</p>
+        <ul class="arrivare">
+          {s.comeArrivare.map((r) => <li>{r}</li>)}
+        </ul>
+      </div>
+
+      <div class="riquadro quieto">
+        <h2>Lavori nel settore?</h2>
+        <p>{s.lavoro}</p>
+        <p><a href="/lavora-con-noi?sede=rsa-gran-torino">Vedi le posizioni qui →</a></p>
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .briciole {
+    padding-top: var(--sp-4);
+  }
+  .briciole ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+  }
+  .briciole li + li::before {
+    content: '›';
+    margin-right: var(--sp-2);
+    color: var(--bordo-controllo);
+  }
+  .briciole a {
+    color: var(--testo-secondario);
+    text-decoration: none;
+  }
+  .briciole a:hover {
+    text-decoration: underline;
+  }
+
+  .apertura {
+    padding-top: var(--sp-5);
+  }
+  .riga-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .disponibilita {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    font-weight: var(--peso-forte);
+  }
+  .quando {
+    font-weight: var(--peso-normale);
+    color: var(--testo-tenue);
+  }
+  .apertura h1 {
+    margin-top: var(--sp-3);
+  }
+  .dati {
+    margin-top: var(--sp-3);
+    color: var(--testo-secondario);
+    max-width: none;
+  }
+
+  .galleria {
+    margin: var(--sp-5) 0 0;
+  }
+  .segnaposto {
+    background: var(--superficie-alt);
+    border: 1px dashed var(--bordo-controllo);
+    border-radius: var(--raggio);
+    aspect-ratio: 21 / 9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    text-align: center;
+    padding: var(--sp-5);
+    max-width: 100%;
+  }
+  .segnaposto p {
+    color: var(--testo-tenue);
+  }
+  figcaption {
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+    margin-top: var(--sp-3);
+    max-width: var(--misura);
+  }
+
+  .impaginato {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: var(--sp-7);
+    align-items: start;
+    margin-top: var(--sp-7);
+  }
+
+  section + section {
+    margin-top: var(--sp-7);
+  }
+  section h2 {
+    margin-bottom: var(--sp-4);
+  }
+  section p + p {
+    margin-top: var(--sp-3);
+  }
+
+  .non-e {
+    border-left: 3px solid var(--anziani-grafico);
+    padding-left: var(--sp-4);
+    color: var(--testo-secondario);
+  }
+
+  .giornata {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .giornata li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--bordo);
+  }
+  .ora {
+    font-family: var(--font-display);
+    font-weight: var(--peso-forte);
+    color: var(--anziani-testo);
+  }
+
+  .costi {
+    background: var(--primario-chiaro);
+    border: 1px solid var(--primario-bordo);
+    border-radius: var(--raggio);
+    padding: var(--sp-6);
+  }
+  .voci {
+    list-style: none;
+    margin: var(--sp-4) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+  .voci li {
+    background: var(--superficie);
+    border: 1px solid var(--primario-bordo);
+    border-radius: var(--raggio-pieno);
+    padding: var(--sp-1) var(--sp-3);
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-medio);
+    color: var(--primario-scuro);
+  }
+
+  .passi {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+  .passi li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: start;
+  }
+  .numero {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--raggio-pieno);
+    background: var(--primario-chiaro);
+    color: var(--primario);
+    font-family: var(--font-display);
+    font-size: var(--corpo-3);
+    font-weight: var(--peso-forte);
+    display: grid;
+    place-items: center;
+  }
+  .passi h3 {
+    font-size: var(--corpo-3);
+  }
+  .passi p {
+    color: var(--testo-secondario);
+    margin-top: var(--sp-1);
+  }
+
+  .referente {
+    display: flex;
+    gap: var(--sp-4);
+    align-items: center;
+    background: var(--superficie);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    padding: var(--sp-4);
+  }
+  .ritratto {
+    width: 76px;
+    height: 76px;
+    border-radius: var(--raggio-pieno);
+    background: var(--superficie-alt);
+    border: 1px dashed var(--bordo-controllo);
+    display: grid;
+    place-items: center;
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+    flex: none;
+  }
+  .nome {
+    font-family: var(--font-display);
+    font-size: var(--corpo-4);
+    font-weight: var(--peso-forte);
+    color: var(--inchiostro);
+  }
+  .ruolo {
+    font-size: var(--corpo-1);
+    color: var(--testo-tenue);
+  }
+
+  .atti {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--sp-2) var(--sp-4);
+    font-size: var(--corpo-1);
+  }
+  .atti dt {
+    font-weight: var(--peso-forte);
+    color: var(--inchiostro);
+  }
+  .atti dd {
+    margin: 0;
+    color: var(--testo-secondario);
+  }
+
+  .nota {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    margin-top: var(--sp-4);
+  }
+
+  .colonna-lato {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    position: sticky;
+    top: var(--sp-4);
+  }
+  .riquadro {
+    background: var(--primario-chiaro);
+    border: 1px solid var(--primario-bordo);
+    border-radius: var(--raggio);
+    padding: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .riquadro.quieto {
+    background: var(--superficie);
+    border-color: var(--bordo);
+  }
+  .riquadro h2 {
+    font-size: var(--corpo-4);
+    margin: 0;
+  }
+  .riquadro p {
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+    margin: 0;
+  }
+  .indirizzo {
+    font-weight: var(--peso-forte);
+    color: var(--inchiostro) !important;
+  }
+  .arrivare {
+    margin: 0;
+    padding-left: var(--sp-5);
+    font-size: var(--corpo-1);
+    color: var(--testo-secondario);
+  }
+
+  @media (max-width: 62rem) {
+    .impaginato {
+      grid-template-columns: 1fr;
+      gap: var(--sp-6);
+      margin-top: var(--sp-6);
+    }
+    .colonna-lato {
+      position: static;
+    }
+  }
+</style>
