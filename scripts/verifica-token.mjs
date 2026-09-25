@@ -17,18 +17,16 @@ const qui = dirname(fileURLToPath(import.meta.url));
 const radice = resolve(qui, '..');
 const src = resolve(radice, 'src');
 
-/** File esentati, con la ragione. */
-const ESENTI = new Map([
-  ['src/styles/token.css', 'definisce i token'],
-  [
-    'src/components/Piede.astro',
-    'il piè di pagina è l’unico fondo scuro fisso: i suoi colori sono verificati a parte da verifica-contrasto',
-  ],
-  [
-    'src/pages/index.astro',
-    'il riquadro scuro della home usa gli stessi colori fissi del piè di pagina, verificati a parte',
-  ],
-]);
+/**
+ * File esentati, con la ragione.
+ *
+ * Erano tre. Una revisione ha fatto notare che le due esenzioni in più
+ * coprivano esattamente i due file che contenevano colori scritti a mano:
+ * un controllo che esenta proprio ciò che dovrebbe controllare non serve a
+ * niente. Adesso quei colori sono token che non si invertono fra i temi
+ * (--fondo-scuro, --su-scuro, --piede-fondo…) e l'esenzione è sparita.
+ */
+const ESENTI = new Map([['src/styles/token.css', 'definisce i token']]);
 
 function tuttiIFile(dir) {
   const out = [];
@@ -106,8 +104,62 @@ for (const file of tuttiIFile(src)) {
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Secondo controllo: ogni token citato deve esistere.
+ *
+ * Il primo controllo cerca valori scritti a mano; il verificatore dei
+ * contrasti legge solo i token dichiarati. Fra i due c'era una crepa, e
+ * dentro ci stavano --attenzione-testo e --attenzione-fondo: citati da
+ * quattro componenti, dichiarati da nessuno. Un var() irrisolto non è un
+ * errore per il browser: la dichiarazione salta e basta. Sulla pagina
+ * diventava un filetto sparito e un fondo che non c'era — e nessuno dei
+ * due controlli poteva vederlo.
+ *
+ * Qui si guardano anche gli script dell'anteprima, perché è lì che il
+ * markup e lo stile delle schermate vivono davvero.
+ * ------------------------------------------------------------------ */
+const definiti = new Set();
+const cssToken = readFileSync(resolve(src, 'styles/token.css'), 'utf8');
+for (const m of cssToken.matchAll(/(--[a-z0-9-]+)\s*:/g)) definiti.add(m[1]);
+
+const daControllare = [
+  ...tuttiIFile(src),
+  ...readdirSync(resolve(radice, 'scripts'))
+    .filter((n) => n.endsWith('.mjs') && !n.startsWith('verifica-'))
+    .map((n) => join(radice, 'scripts', n)),
+];
+
+/* Un token può essere dichiarato anche localmente: --campione-grafico vive
+   solo nella pagina del sistema, --font-display nel :root dei generatori.
+   Vale come dichiarazione: quello che si cerca qui è il token che NON è
+   dichiarato da nessuna parte. */
+const sorgenti = daControllare.map((f) => [f, readFileSync(f, 'utf8')]);
+for (const [, testo] of sorgenti)
+  for (const m of testo.matchAll(/(--[a-z0-9-]+)\s*:/g)) definiti.add(m[1]);
+
+const mancanti = new Map();
+for (const [file, testo] of sorgenti) {
+  const rel = relative(radice, file).replaceAll('\\', '/');
+  if (rel === 'src/styles/token.css') continue;
+  // `var(--sp-${n})` è un token scelto a runtime: il nome non è scritto qui.
+  for (const m of testo.matchAll(/var\(\s*(--[a-z0-9-]+)(\$\{)?/g)) {
+    if (m[2] || definiti.has(m[1])) continue;
+    const riga = testo.slice(0, m.index).split('\n').length;
+    if (!mancanti.has(m[1])) mancanti.set(m[1], []);
+    mancanti.get(m[1]).push(`${rel}:${riga}`);
+  }
+}
+
+for (const [token, dove] of mancanti) {
+  console.error(`  ✗ token citato ma mai dichiarato: ${token} — ${dove.slice(0, 4).join(', ')}${dove.length > 4 ? ` e altri ${dove.length - 4}` : ''}`);
+  errori++;
+}
+
 if (errori) {
-  console.error(`\n✗ Token: ${errori} valori scritti a mano in ${esaminati} file.`);
+  console.error(`\n✗ Token: ${errori} problemi in ${esaminati} file.`);
   process.exit(1);
 }
-console.log(`✓ Token: ${esaminati} file esaminati, nessun valore scritto a mano.`);
+console.log(
+  `✓ Token: ${esaminati} file esaminati, nessun valore scritto a mano; ` +
+    `${definiti.size} token dichiarati, tutti quelli citati esistono.`,
+);

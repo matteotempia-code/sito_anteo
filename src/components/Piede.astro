@@ -58,8 +58,8 @@ const COLONNE = [
 
       {
         COLONNE.map((c) => (
-          <nav class="colonna" aria-label={c.titolo}>
-            <h2>{c.titolo}</h2>
+          <nav class="colonna" aria-labelledby={`piede-${c.titolo.replace(/\s/g, '-').toLowerCase()}`}>
+            <h2 id={`piede-${c.titolo.replace(/\s/g, '-').toLowerCase()}`}>{c.titolo}</h2>
             <ul>
               {c.voci.map((v) => (
                 <li>
@@ -89,8 +89,8 @@ const COLONNE = [
 
 <style>
   .piede {
-    background: #241c33;
-    color: #d9d2e4;
+    background: var(--piede-fondo);
+    color: var(--su-piede);
     margin-top: var(--sp-8);
     padding-block: var(--sp-7) var(--sp-5);
     font-size: var(--corpo-1);
@@ -101,7 +101,7 @@ const COLONNE = [
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: var(--sp-6) var(--sp-5);
     padding-bottom: var(--sp-6);
-    border-bottom: 1px solid #443659;
+    border-bottom: 1px solid var(--bordo-su-scuro);
   }
 
   .identita img {
@@ -113,7 +113,7 @@ const COLONNE = [
     margin-top: var(--sp-4);
     max-width: 34ch;
     line-height: var(--interlinea-larga);
-    color: #c4bbd2;
+    color: var(--su-piede-recapiti);
   }
 
   .colonna h2 {
@@ -122,7 +122,7 @@ const COLONNE = [
     font-weight: var(--peso-forte);
     letter-spacing: var(--spaziatura-lettere-etichetta);
     text-transform: uppercase;
-    color: #a99cbe;
+    color: var(--su-piede-tenue);
     margin-bottom: var(--sp-3);
   }
 
@@ -138,7 +138,7 @@ const COLONNE = [
   }
 
   .piede a {
-    color: #e6e0ee;
+    color: var(--su-scuro);
     text-decoration: none;
   }
   .piede a:hover {
@@ -146,7 +146,7 @@ const COLONNE = [
     text-underline-offset: 0.2em;
   }
   .piede a:focus-visible {
-    outline-color: #d9cee8;
+    outline-color: var(--focus-su-scuro);
   }
 
   .basso {
@@ -170,6 +170,6 @@ const COLONNE = [
   }
 
   .nota {
-    color: #a99cbe;
+    color: var(--su-piede-tenue);
   }
 </style>

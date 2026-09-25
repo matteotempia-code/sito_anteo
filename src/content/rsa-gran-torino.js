@@ -30,6 +30,15 @@ export const scheda = {
   indirizzo: 'Strada San Mauro 158, Torino',
   indirizzoPubblicabile: true,
   postiLetto: 120,
+  /**
+   * La nostra guida «Come si entra in una RSA» dice ai familiari di
+   * chiedere il rapporto fra operatori e ospiti e di farselo dire in
+   * numeri. Una scheda che non lo dichiara rende quella guida un
+   * autogol: insegna una domanda a cui poi rifiutiamo di rispondere.
+   */
+  rapportoGiorno: '[N]',
+  rapportoNotte: '[N]',
+  attesaMedia: '[N] giorni sul convenzionato · [N] sul privato',
   apertaNel: '[ANNO]',
   percorso: ['Home', 'Servizi', 'Anziani', 'Torino', 'RSA Gran Torino'],
   urlPercorso: ['/', '/servizi', '/servizi/anziani', '/servizi/anziani/torino'],
@@ -54,6 +63,20 @@ export const scheda = {
     no:
       'Non è il posto giusto se la persona si muove da sola e ha bisogno soprattutto di compagnia: in quel caso funzionano meglio un centro diurno o l’assistenza a casa, e possiamo indicarteli noi.',
   },
+
+  /**
+   * Prova della sostituzione: se una frase resta vera cambiando il nome
+   * della struttura con quello di un'altra, non sta dicendo niente. «Una
+   * giornata tipo» con sveglia, pranzo e cena la scrivono tutti uguale.
+   *
+   * Le righe qui sotto restano — le famiglie il ritmo lo vogliono sapere —
+   * ma quello che le rende questa struttura e non un'altra sono tre
+   * dettagli che ci sono già dentro: la sveglia non è a orario fisso, a
+   * pranzo i familiari possono fermarsi, di notte c'è personale
+   * infermieristico. Quella è la riga che va letta per prima.
+   */
+  giornataPremessa:
+    'Il ritmo è quello di ogni residenza. Tre cose qui funzionano diversamente, e sono quelle su cui vale la pena farci domande: la sveglia non ha un orario fisso, a pranzo i familiari possono fermarsi, e di notte restano in servizio infermieri, non solo operatori.',
 
   giornata: [
     ['7:00', 'Sveglia con i tempi di ciascuno, igiene e colazione. Chi preferisce dormire, dorme.'],
@@ -105,6 +128,11 @@ export const scheda = {
 
   cartaDeiServizi:
     'La carta dei servizi si consegna al colloquio o su richiesta: contiene le tariffe, e di quelle parliamo di persona.',
+
+  telefono: {
+    numero: '800 127 996',
+    orari: 'lun-ven 9-18, chiamata gratuita',
+  },
 
   visita: {
     titolo: 'Vieni a vedere',

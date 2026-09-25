@@ -24,6 +24,40 @@
   --marchio-arancio: #e9501a;
   --marchio-giallo: #f9af25;
 
+  /* ---------- fondi scuri, fissi nei due temi ----------
+     Errore trovato in revisione: usare --primario-scuro come FONDO di una
+     fascia significa che in tema scuro quel token diventa chiaro, e il
+     testo bianco sopra scende a 1,87:1. Invisibile, e il verificatore non
+     se ne accorgeva perché leggeva solo i valori letterali.
+     Questi cinque non cambiano mai. */
+  --fondo-scuro: #4a3468;
+  --su-scuro: #efeaf6;
+  --su-scuro-forte: #ffffff;
+  --su-scuro-tenue: #cbbde3;
+  --piede-fondo: #241c33;
+  --su-piede: #d9d2e4;
+  --su-piede-tenue: #a99cbe;
+  --su-piede-recapiti: #b7abc9;
+  /* ---------- valori di ripiego per le tre variabili di settore ----------
+     --filetto, --tinta e --velo le imposta la classe .s-<settore>. Quando
+     un blocco la perde per strada — è già successo: il riquadro «come
+     funziona qui» della pagina provincia — il var() resta irrisolto e la
+     dichiarazione salta senza dire niente: un filetto sparito, non un
+     errore. Con un ripiego neutro qui, il peggio che può capitare è un
+     grigio al posto di un colore. */
+  --filetto: #948b7f;
+  --tinta: #4a4458;
+  --velo: #f5f2ee;
+
+  --bordo-su-scuro: #443659;
+  /* Il bordo della pastiglia «Area soci» era rgb(255 255 255 / 0.35),
+     scritto a mano dentro il foglio: un valore letterale che il
+     verificatore dei contrasti non poteva vedere e che al verificatore dei
+     token sfuggiva perché stava in un file esente. Adesso è un token, ed è
+     abbastanza forte da distinguersi (3:1 sul fondo scuro). */
+  --bordo-su-scuro-forte: #7a6796;
+  --focus-su-scuro: #d9cee8;
+
   /* ---------- colore primario ---------- */
   --primario: #684a90;
   --primario-scuro: #4a3468;
@@ -31,16 +65,16 @@
   --primario-bordo: #d9cee8;
 
   /* ---------- neutri, con una leggera deriva verso il viola ---------- */
-  --fondo: #fbfaf8;
+  --fondo: #f7f4f0;
   --superficie: #ffffff;
   --superficie-alt: #f5f2ee;
   --inchiostro: #1a1523;
   --testo: #2e2838;
   --testo-secondario: #4f4a58;
   --testo-tenue: #635c6e;
-  --bordo: #e4dfd6;
+  --bordo: #dcd5c9;
   --bordo-controllo: #8c8478; /* ≥ 3:1: i campi da compilare si devono vedere */
-  --bordo-opzione: #9a9186; /* opzioni non selezionate */
+  --bordo-opzione: #948b7f; /* opzioni non selezionate: 3,2:1 su entrambi i fondi */
 
   /* ---------- i sei settori ----------
      Il colore significa SETTORE e nient'altro, su tutto il sito.
@@ -52,7 +86,9 @@
   --salute-mentale-testo: #4a3468;
   --salute-mentale-fondo: #f2eef7;
 
-  --anziani-grafico: #48a345;
+  /* Scurito di un soffio dopo la revisione: il verde del marchio su un
+     fondo caldo stava a 2,90:1, sotto la soglia per un segno grafico. */
+  --anziani-grafico: #439a40;
   --anziani-testo: #265e24;
   --anziani-fondo: #eaf3ea;
 
@@ -76,13 +112,36 @@
   --sociale-testo: #6b2e55;
   --sociale-fondo: #f7edf3;
 
-  /* ---------- stati ---------- */
-  --positivo-testo: #265e24;
-  --positivo-fondo: #eaf3ea;
-  --attenzione-testo: #6f4e05;
-  --attenzione-fondo: #fbf3e0;
-  --critico-testo: #a8172a;
-  --critico-fondo: #fbeaec;
+  /* ---------- stati ----------
+     Errore trovato in revisione: gli stati usavano le stesse identiche
+     tinte dei settori — «posti disponibili» era il verde di «anziani»,
+     «lista d'attesa» il rosso di «dipendenze». Stesso colore, due
+     significati, a quaranta pixel di distanza: la regola del progetto
+     violata dal progetto stesso.
+     Adesso lo stato si legge per FORMA — un glifo e il peso — su fondo
+     neutro. Il colore resta al settore. Funziona anche per chi i colori
+     non li distingue. */
+  --stato-fondo: #f0ece6;
+  --stato-testo: #3d3747;
+  --stato-bordo: #8b8375;
+
+  /* L'allarme è l'unica eccezione dichiarata: il rosso di emergenza è una
+     convenzione universale e vince sulla regola interna. Compare solo nel
+     blocco sicurezza, dove c'è 112 e 1522, e da nessun'altra parte. */
+  /* ---------- avvisi e note ----------
+     Quattro componenti — la nota di progetto, l'avviso «non si entra
+     scrivendo a noi», lo stato «in programma» e i tre errori della guida —
+     citavano --attenzione-testo e --attenzione-fondo. Non erano mai stati
+     definiti: il var() restava irrisolto, il colore non si applicava, il
+     filetto spariva, e nessuno dei due verificatori poteva accorgersene
+     perché uno cerca colori scritti a mano e l'altro legge solo i token
+     che esistono. Adesso esistono, e verifica-token controlla anche che
+     ogni token citato sia dichiarato. */
+  --attenzione-testo: #7a4a05;
+  --attenzione-fondo: #fbf1e0;
+
+  --allarme-testo: #8e1220;
+  --allarme-fondo: #fbe9ea;
 
   /* ---------- tipografia: sette gradi, non uno di più ---------- */
   --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -117,6 +176,10 @@
   --sp-6: 2rem; /* 32 */
   --sp-7: 3rem; /* 48 */
   --sp-8: 4rem; /* 64 */
+  /* Nono passo, aggiunto dopo la revisione: con otto valori il ritmo
+     verticale era binario — 48 e 64 — e ogni stacco pesava quanto gli
+     altri. Questo serve solo prima di un cambio di superficie. */
+  --sp-9: 6.5rem; /* 104 */
 
   /* ---------- raggi: due ---------- */
   --raggio: 12px;
@@ -161,6 +224,10 @@
     --bordo: #332b43;
     --bordo-controllo: #8a819b;
     --bordo-opzione: #7d7490;
+    --filetto: #8a819b;
+    --tinta: #cfc7dc;
+    --velo: #261f33;
+
 
     --salute-mentale-grafico: #b396e2;
     --salute-mentale-testo: #c9b4ec;
@@ -186,12 +253,13 @@
     --sociale-testo: #d79cbd;
     --sociale-fondo: #2d1f28;
 
-    --positivo-testo: #8ece8b;
-    --positivo-fondo: #1c2b1c;
-    --attenzione-testo: #e5bc63;
-    --attenzione-fondo: #2e2513;
-    --critico-testo: #f08a97;
-    --critico-fondo: #331a1e;
+    --stato-fondo: #2b2439;
+    --stato-testo: #ded8e8;
+    --stato-bordo: #8a8199;
+    --attenzione-testo: #f0b968;
+    --attenzione-fondo: #33270f;
+    --allarme-testo: #f5919d;
+    --allarme-fondo: #331a1e;
 
     --ombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 10px rgb(0 0 0 / 0.35);
   }
@@ -215,6 +283,10 @@
   --bordo: #332b43;
   --bordo-controllo: #8a819b;
   --bordo-opzione: #7d7490;
+  --filetto: #8a819b;
+  --tinta: #cfc7dc;
+  --velo: #261f33;
+
 
   --salute-mentale-grafico: #b396e2;
   --salute-mentale-testo: #c9b4ec;
@@ -240,12 +312,13 @@
   --sociale-testo: #d79cbd;
   --sociale-fondo: #2d1f28;
 
-  --positivo-testo: #8ece8b;
-  --positivo-fondo: #1c2b1c;
-  --attenzione-testo: #e5bc63;
-  --attenzione-fondo: #2e2513;
-  --critico-testo: #f08a97;
-  --critico-fondo: #331a1e;
+  --stato-fondo: #2b2439;
+  --stato-testo: #ded8e8;
+  --stato-bordo: #8a8199;
+  --attenzione-testo: #f0b968;
+  --attenzione-fondo: #33270f;
+  --allarme-testo: #f5919d;
+  --allarme-fondo: #331a1e;
 
   --ombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 10px rgb(0 0 0 / 0.35);
 }

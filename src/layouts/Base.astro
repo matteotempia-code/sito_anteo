@@ -41,6 +41,11 @@ const canonico = new URL(Astro.url.pathname, Astro.site).href;
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonico} />
     <meta property="og:locale" content="it_IT" />
+    <!-- Senza immagine, ogni condivisione su WhatsApp — che per questo
+         pubblico è il canale principale — arriva come una scheda vuota. -->
+    <meta property="og:image" content={new URL('/condivisione.png', Astro.site).href} />
+    <meta property="og:image:alt" content="Anteo Impresa Sociale" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#684a90" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#15111d" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/marchio/logo-mark.svg" type="image/svg+xml" />
@@ -49,7 +54,7 @@ const canonico = new URL(Astro.url.pathname, Astro.site).href;
   <body>
     <a class="salta" href="#contenuto">Salta al contenuto</a>
     <Testata />
-    <main id="contenuto">
+    <main id="contenuto" tabindex="-1">
       <slot />
     </main>
     <Piede />

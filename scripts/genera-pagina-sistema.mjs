@@ -128,6 +128,12 @@ ${variabiliScure}
   .mini { font-size: var(--corpo-1); color: var(--testo-tenue); }
   .pillola { display: inline-flex; padding: 4px 12px; border-radius: 999px;
     font-size: var(--corpo-1); font-weight: 600; white-space: nowrap; }
+  .stato { display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px; border-radius: 999px; font-size: var(--corpo-1);
+    font-weight: 600; white-space: nowrap; background: var(--stato-fondo);
+    color: var(--stato-testo); border: 1px solid var(--stato-bordo); }
+  .stato.avvisa { background: var(--attenzione-fondo); color: var(--attenzione-testo);
+    border-color: var(--attenzione-testo); }
 
   table { border-collapse: collapse; width: 100%; font-size: var(--corpo-1); }
   th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--bordo); vertical-align: middle; }
@@ -229,12 +235,23 @@ ${SPAZI.map((px, i) => `      <li><span class="barra" style="width:${px}px"></sp
       <button class="azione a-quieto">Annulla</button>
     </div>
 
-    <h3>La pillola</h3>
+    <h3>La pillola, e lo stato</h3>
+    <p class="nota">Sono due cose diverse e vanno tenute diverse. La pillola prende la tinta del
+    settore, perché il colore su questo sito significa settore e nient'altro. Lo stato di un
+    posto — libero, in attesa, su invio — si legge da un glifo su fondo neutro, che funziona
+    anche per chi i colori non li distingue. Prima erano la stessa forma con due significati:
+    «posti disponibili» usciva del verde di «anziani» e «lista d'attesa» del rosso di
+    «dipendenze».</p>
     <div class="fila">
       <span class="pillola" style="background:var(--superficie-alt);color:var(--testo-secondario);border:1px solid var(--bordo)">neutra</span>
-      <span class="pillola" style="background:var(--positivo-fondo);color:var(--positivo-testo)">posti disponibili</span>
-      <span class="pillola" style="background:var(--attenzione-fondo);color:var(--attenzione-testo)">dato da aggiornare</span>
-      <span class="pillola" style="background:var(--critico-fondo);color:var(--critico-testo)">lista d'attesa</span>
+      <span class="pillola" style="background:var(--anziani-fondo);color:var(--anziani-testo)">anziani</span>
+      <span class="pillola" style="background:var(--salute-mentale-fondo);color:var(--salute-mentale-testo)">salute mentale</span>
+    </div>
+    <div class="fila">
+      <span class="stato">&#9679; posti disponibili</span>
+      <span class="stato">&#9680; lista d’attesa</span>
+      <span class="stato">&#9675; su invio del servizio pubblico</span>
+      <span class="stato avvisa">&#8635; dato da aggiornare</span>
     </div>
 
     <h3>La scheda</h3>

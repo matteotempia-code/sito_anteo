@@ -27,17 +27,26 @@ export const IDENTITA = {
   // un numero separato dalla sua unità a fine riga si legge male.
   titolo: 'Salute mentale, anziani, disabilità, dipendenze, infanzia. In 347\u00a0servizi, 21\u00a0province.',
   testo:
-    'Accompagniamo 17.477 persone lungo pezzi difficili della loro vita. Alcune ci scelgono, altre arrivano attraverso il servizio pubblico che le ha in carico, altre entrano da sole senza che nessuno le mandi. Da qualunque porta si arrivi, questo sito dovrebbe dirti in due minuti che cosa esiste e chi ti risponde.',
+    'Aiutiamo 17.477 persone e le loro famiglie. Alcune ci cercano, altre le manda il servizio pubblico che le ha in carico, altre entrano da sole. Qui trovi in due minuti che cosa esiste vicino a te e chi ti risponde.',
   foto: '[FOTOGRAFIA REALE]',
   fotoDidascalia:
     'Professionisti di Anteo Impresa Sociale al lavoro. Mai immagini di repertorio: qui si decide la credibilità.',
 };
 
 /** I quattro numeri. Grandi, in Fraunces: è il gesto che vi rende riconoscibili. */
+/**
+ * I quattro numeri grandi. Stanno qui una volta sola perché compaiono in due
+ * pagine: la home e «chi siamo». Prima erano due elenchi scritti a mano, con
+ * lo stesso valore in ordine diverso e con due etichette diverse per la
+ * stessa cosa — «persone assistite» di qua, «persone assistite in un anno»
+ * di là. Chi legge non se ne accorge; chi decide di fidarsi, sì.
+ *
+ * «In un anno» è l'etichetta esatta ed è quella che resta, in tutte e due.
+ */
 export const NUMERI = [
   ['347', 'servizi attivi'],
   ['21', 'province, in 8 regioni'],
-  ['17.477', 'persone assistite'],
+  ['17.477', 'persone assistite in un anno'],
   ['2.038', 'professionisti'],
 ];
 
@@ -48,6 +57,7 @@ export const NUMERI = [
  */
 export const PORTE = [
   {
+    href: '/servizi',
     occhiello: 'Per me o per una persona a cui tengo',
     titolo: 'Cerco aiuto',
     testo:
@@ -56,14 +66,16 @@ export const PORTE = [
     icona: 'cuore',
   },
   {
+    href: '/invianti',
     occhiello: 'Lavoro in un servizio pubblico',
     titolo: 'Cerco un posto per un utente',
     testo:
-      'CSM, SerD, servizi sociali, tutela minori, UVG. Disponibilità aggiornata, requisiti di ammissione, referente clinico con il numero diretto.',
+      'Centri di salute mentale, servizi per le dipendenze (SerD), servizi sociali, tutela minori. Disponibilità aggiornata, requisiti di ammissione, referente clinico con il numero diretto.',
     azione: 'Area servizi invianti',
     icona: 'cartella',
   },
   {
+    href: '/lavora-con-noi',
     occhiello: 'Cerco lavoro',
     titolo: 'Voglio lavorare con voi',
     testo:
@@ -72,6 +84,7 @@ export const PORTE = [
     icona: 'persona',
   },
   {
+    href: '/enti',
     occhiello: 'Rappresento un ente o un’impresa',
     titolo: 'Valuto Anteo Impresa Sociale',
     testo:
@@ -95,7 +108,7 @@ export const SETTORI = [
     codice: 'anziani',
     nome: 'Anziani',
     sedi: 36,
-    testo: '35 RSA e case di riposo, centri diurni, soggiorni brevi. 5.240 posti letto.',
+    testo: '[N] RSA, [N] case di riposo, [N] nuclei Alzheimer, [N] centri diurni, [N] soggiorni di sollievo. In tutto 5.240 posti.',
     accessoDiretto: true,
   },
   {
@@ -116,12 +129,12 @@ export const SETTORI = [
     codice: 'dipendenze',
     nome: 'Dipendenze',
     sedi: 8,
-    testo: 'Comunità terapeutiche e servizi a bassa soglia, con la rete Saman. Si può entrare senza invio.',
+    testo: 'Comunità terapeutiche e servizi a bassa soglia, dentro Saman, la rete storica delle comunità per le dipendenze. Si può entrare senza invio.',
     accessoDiretto: true,
   },
   {
     codice: 'sociale',
-    nome: 'Servizi sociali',
+    nome: 'Servizi sociali territoriali',
     sedi: 8,
     testo: 'Accoglienza donne, domiciliarità, inserimento lavorativo, sportelli informativi.',
     accessoDiretto: true,
@@ -139,7 +152,7 @@ export const NAVIGAZIONE = [
 export const PIEDE = [
   {
     titolo: 'I servizi',
-    voci: ['Salute mentale', 'Anziani', 'Disabilità', 'Infanzia e adolescenza', 'Dipendenze', 'Servizi sociali'],
+    voci: ['Salute mentale', 'Anziani', 'Disabilità', 'Infanzia e adolescenza', 'Dipendenze', 'Servizi sociali territoriali'],
   },
   {
     titolo: 'L’impresa',

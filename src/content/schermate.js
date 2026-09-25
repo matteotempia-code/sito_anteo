@@ -44,6 +44,14 @@ export const SICUREZZA = {
   uscita: 'Esci subito',
 };
 
+/**
+ * Il nostro numero verde è attivo dal lunedì al venerdì, 9-18. Le crisi
+ * non lo sono. Tacerlo scarica su chi legge un'aspettativa che non
+ * possiamo mantenere: questa riga sta accanto al numero, ovunque compaia.
+ */
+export const FUORI_ORARIO =
+  'Fuori orario e nei fine settimana lascia un recapito: richiamiamo il primo giorno utile. Se è un’emergenza, 112.';
+
 export const RICERCA = {
   titolo: 'Di chi stiamo parlando, e cosa succede?',
   intro: 'Rispondi come ti viene. Al nome tecnico del servizio ci pensiamo noi — e se quello che serve non è nostro, te lo diciamo.',
@@ -55,7 +63,7 @@ export const RICERCA = {
         'Una persona con disabilità',
         'Qualcuno che attraversa un disturbo psichico',
         'Qualcuno con un problema di sostanze o gioco',
-        'Un minore, o una famiglia in difficoltà',
+        'Un bambino o un ragazzo, o una famiglia in difficoltà',
         'Me stesso',
       ],
     },
@@ -71,7 +79,7 @@ export const RICERCA = {
     },
     { legenda: 'Passo 3 · Dove', opzioni: ['Provincia', 'Comune o CAP'] },
   ],
-  nota: 'Nessuna opzione è preselezionata e la ricerca viaggia in POST: quello che scegli non finisce in un indirizzo web, in un referrer o in uno strumento di analisi. Sono dati che rivelano una condizione di salute.',
+  nota: 'Quello che scegli qui non viene salvato né tracciato: nessuna opzione è già selezionata, e la ricerca non lascia traccia nell’indirizzo della pagina.',
   azione: 'Mostra i servizi',
   esito: '[N] servizi in [PROVINCIA]',
 };
@@ -106,17 +114,17 @@ export const INVIANTI = {
     ['sempre', 'una risposta motivata, anche quando è no'],
   ],
   disponibilita: [
-    ['Comunità protetta', 'Biella, Vercelli', '[N]'],
-    ['Gruppo appartamento', 'Vercelli, Torino', '[N]'],
-    ['Comunità terapeutica', 'Biella', '[N]'],
-    ['Centro diurno', 'Torino', '[N]'],
+    ['Comunità protetta · salute mentale', 'Biella, Vercelli', '[N]'],
+    ['Gruppo appartamento · salute mentale', 'Vercelli, Torino', '[N]'],
+    ['Comunità terapeutica · dipendenze', 'Biella', '[N]'],
+    ['Centro diurno · disabilità', 'Torino', '[N]'],
   ],
   notaDisponibilita: 'Posti liberi per tipologia e provincia, senza dettaglio di sede e senza nessun dato di persona. Il dettaglio sta nell’area riservata, dove ogni ente vede soltanto i propri inseriti.',
   referenti: [
     ['Salute mentale', '[NOME]', '[TELEFONO DIRETTO]'],
     ['Dipendenze', '[NOME]', '[TELEFONO DIRETTO]'],
     ['Disabilità', '[NOME]', '[TELEFONO DIRETTO]'],
-    ['Minori', '[NOME]', '[TELEFONO DIRETTO]'],
+    ['Infanzia e adolescenza', '[NOME]', '[TELEFONO DIRETTO]'],
   ],
   procedure: 'Che cosa serve e a chi si manda, per ciascuno dei quattro settori. I moduli hanno una data di revisione visibile e un proprietario.',
 };
@@ -133,7 +141,7 @@ export const ANNUNCIO = {
   chiCerchiamo: 'Qualifica OSS. Se hai lavorato in RSA tanto meglio, ma formiamo anche chi arriva da altri contesti: l’affiancamento dura [N] settimane.',
   cosaFai: 'Igiene e mobilizzazione, aiuto ai pasti, accompagnamento nelle attività. Lavori in équipe con infermieri, fisioterapisti e educatori, e la persona che assisti la conosci per nome.',
   selezione: [
-    ['Entro 3 giorni', 'ti richiamiamo, anche se la risposta è no'],
+    ['Entro 24 ore', 'ti richiamiamo, anche se la risposta è no'],
     ['Colloquio', 'con il direttore di struttura, in sede'],
     ['Entro 10 giorni', 'l’esito, sempre motivato'],
   ],

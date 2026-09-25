@@ -12,9 +12,14 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
   },
+  // Il prefetch automatico è disattivato di proposito. Con prefetchAll, il
+  // solo passaggio del mouse su /servizi/dipendenze/... o
+  // /servizi/salute-mentale/... genera una richiesta: il percorso, che
+  // rivela una condizione di salute, finisce nei log anche senza un clic.
+  // Il prefetch si attiva a mano, voce per voce, solo sui percorsi neutri.
   prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'hover',
+    prefetchAll: false,
+    defaultStrategy: 'tap',
   },
   compressHTML: true,
   devToolbar: { enabled: false },

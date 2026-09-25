@@ -9,13 +9,22 @@ import type { CodiceSettore } from '../lib/settori';
 interface Props {
   /** Colora la pillola con la tinta del settore. */
   settore?: CodiceSettore;
-  /** Stati generici, quando non si tratta di un settore. */
-  tono?: 'neutro' | 'positivo' | 'attenzione' | 'critico';
+  /**
+   * Lo stato di un posto. NON è una tinta: è un glifo su fondo neutro.
+   *
+   * Il colore, su questo sito, significa settore e nient'altro. Le vecchie
+   * varianti «positivo» e «critico» erano il verde di «anziani» e il rosso
+   * di «dipendenze» applicati a «posti disponibili» e «lista d'attesa»:
+   * la regola del progetto violata dal progetto, e illeggibile per chi i
+   * colori non li distingue. Per giunta i due token che citavano non sono
+   * mai esistiti, così quelle pillole uscivano senza fondo.
+   */
+  stato?: 'libero' | 'attesa' | 'invio' | 'aggiornare';
   class?: string;
 }
 
-const { settore, tono = 'neutro', class: classe = '' } = Astro.props;
-const classi = ['pillola', settore ? `s-${settore}` : `t-${tono}`, classe]
+const { settore, stato, class: classe = '' } = Astro.props;
+const classi = ['pillola', settore ? `s-${settore}` : stato ? `e-${stato}` : 't-neutro', classe]
   .filter(Boolean)
   .join(' ');
 ---
@@ -41,18 +50,28 @@ const classi = ['pillola', settore ? `s-${settore}` : `t-${tono}`, classe]
     border-color: var(--bordo);
     color: var(--testo-secondario);
   }
-  .t-positivo {
-    background: var(--positivo-fondo);
-    color: var(--positivo-testo);
+  /* Gli stati si leggono per FORMA, su un fondo che è sempre lo stesso.
+     Il glifo è decorativo: il testo accanto dice già tutto.
+     Le classi si elencano una per una: [class*='e-'] avrebbe preso anche
+     .s-salute-mentale, che contiene «e-m». */
+  :is(.e-libero, .e-attesa, .e-invio) {
+    background: var(--stato-fondo);
+    color: var(--stato-testo);
+    border-color: var(--stato-bordo);
   }
-  .t-attenzione {
+  :is(.e-libero, .e-attesa, .e-invio, .e-aggiornare)::before {
+    font-size: 0.9em;
+    line-height: 1;
+  }
+  .e-libero::before { content: '\25cf'; }
+  .e-attesa::before { content: '\25d0'; }
+  .e-invio::before { content: '\25cb'; }
+  .e-aggiornare {
     background: var(--attenzione-fondo);
     color: var(--attenzione-testo);
+    border-color: var(--attenzione-testo);
   }
-  .t-critico {
-    background: var(--critico-fondo);
-    color: var(--critico-testo);
-  }
+  .e-aggiornare::before { content: '\21bb'; }
 
   .s-salute-mentale {
     background: var(--salute-mentale-fondo);

@@ -53,7 +53,7 @@ const ICONE: Record<string, string> = {
       <div class="porte">
         {
           PORTE.map((p) => (
-            <article class="porta">
+            <a class="porta" href={p.href}>
               <span class="bolla">
                 <svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -64,7 +64,7 @@ const ICONE: Record<string, string> = {
               <h3>{p.titolo}</h3>
               <p class="porta-testo">{p.testo}</p>
               <span class="collegamento">{p.azione} <span aria-hidden="true">→</span></span>
-            </article>
+            </a>
           ))
         }
       </div>
@@ -210,6 +210,9 @@ const ICONE: Record<string, string> = {
     margin-top: var(--sp-6);
   }
   .porta {
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow var(--transizione), border-color var(--transizione);
     background: var(--primario-chiaro);
     border: 1px solid var(--primario-bordo);
     border-radius: var(--raggio);
@@ -217,6 +220,14 @@ const ICONE: Record<string, string> = {
     display: flex;
     flex-direction: column;
     gap: var(--sp-3);
+  }
+  .porta:hover {
+    border-color: var(--primario);
+    box-shadow: var(--ombra);
+  }
+  .porta:hover .collegamento {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
   .bolla {
     width: 64px;
@@ -248,9 +259,13 @@ const ICONE: Record<string, string> = {
 
   /* ---------------- la fascia dei numeri ---------------- */
   .fascia-numeri {
-    background: var(--primario-scuro);
-    color: #efeaf6;
+    background: var(--fondo-scuro);
+    color: var(--su-scuro);
     padding-block: var(--sp-7);
+  }
+  .fascia-numeri :focus-visible,
+  .riquadro-lavoro :focus-visible {
+    outline-color: var(--focus-su-scuro);
   }
   .fascia-numeri dl {
     display: grid;
@@ -263,13 +278,13 @@ const ICONE: Record<string, string> = {
     font-weight: 700;
     font-size: var(--corpo-7);
     line-height: 1;
-    color: #ffffff;
+    color: var(--su-scuro-forte);
     letter-spacing: -0.03em;
   }
   .fascia-numeri dd {
     margin: var(--sp-2) 0 0;
     font-size: var(--corpo-1);
-    color: #cbbde3;
+    color: var(--su-scuro-tenue);
   }
 
   /* ---------------- i sei settori ---------------- */
@@ -396,7 +411,7 @@ const ICONE: Record<string, string> = {
     gap: var(--sp-3);
   }
   .riquadro-lavoro {
-    background: var(--primario-scuro);
+    background: var(--fondo-scuro);
     border-radius: var(--raggio);
     padding: var(--sp-6);
     display: flex;
@@ -404,21 +419,21 @@ const ICONE: Record<string, string> = {
     align-items: center;
     justify-content: space-between;
     gap: var(--sp-5);
-    color: #efeaf6;
+    color: var(--su-scuro);
   }
   .riquadro-lavoro h2 {
-    color: #ffffff;
+    color: var(--su-scuro-forte);
     margin-top: var(--sp-2);
   }
   .riquadro-lavoro p {
     margin-top: var(--sp-3);
   }
   .chiara {
-    color: #cbbde3;
+    color: var(--su-scuro-tenue);
   }
   .riquadro-lavoro :global(.azione.t-primario) {
-    background: #ffffff;
-    color: var(--primario-scuro);
+    background: var(--su-scuro-forte);
+    color: var(--fondo-scuro);
   }
 
   @media (max-width: 62rem) {

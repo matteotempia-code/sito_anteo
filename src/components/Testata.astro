@@ -45,9 +45,10 @@ const attiva = (href: string) => percorso === href || percorso.startsWith(href +
     </nav>
 
     <details class="stretta">
-      <summary aria-label="Apri il menu">
-        <span aria-hidden="true">Menu</span>
-      </summary>
+      <!-- Niente aria-label: il nome accessibile deve CONTENERE l'etichetta
+           visibile, altrimenti «clicca Menu» al comando vocale fallisce
+           (WCAG 2.5.3). <details> annuncia già da sé aperto/chiuso. -->
+      <summary>Menu</summary>
       <nav aria-label="Navigazione principale">
         <ul>
           {
