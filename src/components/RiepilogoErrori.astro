@@ -1,0 +1,118 @@
+---
+/**
+ * Il riepilogo degli errori, in cima al modulo.
+ *
+ * Serve a una cosa sola: dire, prima di ogni altra, quante cose non vanno e
+ * dove sono. Chi compila un modulo con quattro campi e ne sbaglia uno non
+ * deve cercarlo — e chi usa uno schermo parlante non può, perché dovrebbe
+ * riattraversare tutto il modulo per trovare il campo marcato.
+ *
+ * Tre dettagli che lo fanno funzionare davvero:
+ *
+ *  · `tabindex="-1"` e il fuoco spostato qui dopo l'invio fallito. Senza,
+ *    il messaggio esiste ma nessuno ci arriva: il fuoco resta dov'era.
+ *  · ogni riga è un collegamento all'`id` del campo, non un testo. Un
+ *    elenco di errori da cui non si salta al campo è un elenco di rimproveri.
+ *  · `aria-live="assertive"` perché il riquadro compare DOPO un'azione di
+ *    chi legge; `polite` lo farebbe annunciare in ritardo o non annunciare.
+ *
+ * Il testo degli errori dice che cosa fare, non che cosa è successo:
+ * «Scrivi un numero di telefono» e non «Campo non valido».
+ */
+interface Props {
+  /** [id del campo, messaggio]. Vuoto o assente: il riquadro non esiste. */
+  errori?: [string, string][];
+}
+
+const { errori = [] } = Astro.props;
+const quanti = errori.length;
+---
+
+{
+  quanti > 0 && (
+    <div
+      class="riepilogo"
+      id="riepilogo-errori"
+      role="alert"
+      aria-live="assertive"
+      tabindex="-1"
+    >
+      <h2>
+        {quanti === 1
+          ? 'C’è una cosa da sistemare'
+          : `Ci sono ${quanti} cose da sistemare`}
+      </h2>
+      <ul>
+        {errori.map(([id, messaggio]) => (
+          <li>
+            <a href={`#${id}`}>{messaggio}</a>
+          </li>
+        ))}
+      </ul>
+      <p class="rassicura">
+        Quello che hai già scritto non è andato perso.
+      </p>
+    </div>
+  )
+}
+
+<script>
+  /**
+   * Il fuoco va sul riepilogo appena compare.
+   *
+   * Si fa da script e non con `autofocus` perché il riquadro può comparire
+   * anche senza un ricaricamento della pagina, e perché `autofocus` al
+   * caricamento ruberebbe il fuoco anche a chi sta già scrivendo.
+   */
+  const riepilogo = document.getElementById('riepilogo-errori');
+  if (riepilogo) {
+    riepilogo.focus({ preventScroll: false });
+  }
+</script>
+
+<style>
+  .riepilogo {
+    border: 2px solid var(--allarme-testo);
+    border-radius: var(--raggio);
+    background: var(--allarme-fondo);
+    padding: var(--sp-5);
+    margin-bottom: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .riepilogo:focus-visible {
+    outline: var(--focus) solid var(--allarme-testo);
+    outline-offset: var(--focus-scostamento);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: var(--corpo-4);
+    font-weight: var(--peso-forte);
+    color: var(--allarme-testo);
+    margin: 0;
+    line-height: var(--interlinea-media);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  a {
+    color: var(--allarme-testo);
+    font-weight: var(--peso-forte);
+    text-underline-offset: 0.2em;
+  }
+
+  .rassicura {
+    margin: 0;
+    font-size: var(--corpo-1);
+    color: var(--allarme-testo);
+  }
+</style>

@@ -431,6 +431,7 @@ const PAGINE = [
   ['gruppo', 'Gruppo appartamento', GRUPPO_APP],
   ['guida', 'Guida', null],
   ['richiamata', 'Richiamata', null],
+  ['errori', 'Modulo con errori', null],
   ['invianti', 'Servizi invianti', AREA_INVIANTI],
   ['lavoro', 'Lavora con noi', null],
   ['annuncio', 'Annuncio di lavoro', ANNUNCIO_LAVORO],

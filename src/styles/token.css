@@ -144,8 +144,11 @@
   --allarme-fondo: #fbe9ea;
 
   /* ---------- tipografia: sette gradi, non uno di più ---------- */
-  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-testo: 'Public Sans Variable', 'Public Sans', -apple-system, BlinkMacSystemFont,
+  /* Il ripiego non è Georgia nuda ma «Fraunces ripiego», che è Georgia con
+     le metriche riscalate: vedi caratteri.css. Senza, allo scambio fra il
+     carattere di ripiego e quello vero la pagina salta. */
+  --font-display: 'Fraunces', 'Fraunces ripiego', Georgia, 'Times New Roman', serif;
+  --font-testo: 'Public Sans', 'Public Sans ripiego', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, sans-serif;
 
   --corpo-1: 0.9375rem; /* 15 — note, didascalie, etichette */

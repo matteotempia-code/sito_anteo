@@ -321,7 +321,97 @@ ${briciole(['Home', 'Guide', GUIDA.titolo], ['#', '#'])}
 </article>
 ${piede}`;
 
-/* ======================================================= RICHIAMATA ===== */
+/* ======================================================= RICHIAMATA =====
+ *
+ * Due stati della stessa pagina: vuota e dopo un invio sbagliato.
+ *
+ * Il secondo stato è nell'anteprima di proposito. La gestione degli errori
+ * è la parte di un modulo che nessuno disegna e che decide se chi ha
+ * sbagliato una cifra del telefono riesce a rimediare o chiude la pagina.
+ * Se non si guarda, non si corregge.
+ *
+ * Tre cose da notare guardandolo:
+ *  · il riepilogo in cima dice quante cose non vanno, e ogni riga è un
+ *    collegamento che salta al campo. Il fuoco ci arriva da solo;
+ *  · il messaggio sta SOPRA il campo, non sotto: chi ingrandisce la pagina
+ *    del 200 % se lo troverebbe fuori schermo proprio mentre corregge;
+ *  · quello che era già stato scritto è ancora lì. Un modulo che si
+ *    svuota dopo un errore è un modulo che si compila una volta sola.
+ */
+const campoErrato = (id, etichetta, aiuto, errore, extra = '') => `
+      <div class="campo errato">
+        <label for="${id}">${e(etichetta)} <span>(obbligatorio)</span></label>
+        ${aiuto ? `<p class="aiuto" id="${id}-aiuto">${e(aiuto)}</p>` : ''}
+        <p class="errore-campo" id="${id}-errore">
+          <span class="segno" aria-hidden="true">!</span><span>${e(errore)}</span></p>
+        <input id="${id}" name="${id}" ${extra} required aria-required="true"
+          aria-invalid="true" aria-describedby="${id}-errore${aiuto ? ` ${id}-aiuto` : ''}">
+      </div>`;
+
+export const P_RICHIAMATA_ERRORI = `
+${testata('')}
+${briciole(['Home', 'Ti richiamiamo noi'])}
+<div class="guscio modulo-griglia">
+  <div>
+    <p class="etichetta">${e(RICHIAMATA.occhiello)}</p>
+    <h1>${e(RICHIAMATA.titolo)}</h1>
+
+    <div class="riepilogo-errori" id="riepilogo-errori" role="alert" tabindex="-1">
+      <h2>Ci sono 2 cose da sistemare</h2>
+      <ul>
+        <li><a href="#e-tel">Scrivi un numero di telefono: senza, non possiamo richiamarti</a></li>
+        <li><a href="#e-consenso">Serve il tuo consenso per poterti ricontattare</a></li>
+      </ul>
+      <p class="rassicura">Quello che hai già scritto non è andato perso.</p>
+    </div>
+
+    <form class="modulo" method="post" action="/richiamata" onsubmit="return false">
+      <div class="campo">
+        <label for="e-nome">Il tuo nome <span>(obbligatorio)</span></label>
+        <p class="aiuto" id="e-nome-aiuto">Serve solo per sapere come chiamarti.</p>
+        <input id="e-nome" name="nome" type="text" autocomplete="name" value="Giulia Ferraris"
+          required aria-required="true" aria-describedby="e-nome-aiuto">
+      </div>
+      ${campoErrato('e-tel', 'Telefono', '', 'Scrivi un numero di telefono: senza, non possiamo richiamarti.', 'type="tel" autocomplete="tel" inputmode="tel"')}
+      <fieldset class="campo">
+        <legend>Quando ti fa comodo <span>(facoltativo)</span></legend>
+        <div class="opzioni">${RICHIAMATA.fasce
+          .map(
+            (f, i) => `<label class="opzione"><input type="radio" name="fascia"
+              value="${e(f.toLowerCase())}"${i === 1 ? ' checked' : ''}><span>${e(f)}</span></label>`,
+          )
+          .join('')}</div>
+      </fieldset>
+      <div class="campo">
+        <label for="e-bisogno">Di che cosa avresti bisogno <span>(facoltativo)</span></label>
+        <p class="aiuto" id="e-bisogno-aiuto">Anche due righe. Al nome tecnico ci pensiamo noi.</p>
+        <textarea id="e-bisogno" name="bisogno" rows="4" aria-describedby="e-bisogno-aiuto">Mio padre ha 84 anni e da quando è caduto non riesce più a stare a casa da solo.</textarea>
+      </div>
+      <div class="campo errato">
+        <p class="errore-campo" id="e-consenso-errore">
+          <span class="segno" aria-hidden="true">!</span><span>Serve il tuo consenso per poterti ricontattare.</span></p>
+        <label class="consenso" for="e-consenso">
+          <input id="e-consenso" name="consenso" type="checkbox" value="si" required
+            aria-required="true" aria-invalid="true" aria-describedby="e-consenso-errore">
+          <span>${e(RICHIAMATA.consenso)} <span class="obbligo">(obbligatorio)</span></span></label>
+      </div>
+      <button type="submit" class="azione a-primario largo">Richiamami</button>
+    </form>
+  </div>
+
+  <aside class="lato">
+    <div class="riquadro quieto privacy">
+      <p class="etichetta">Che cosa succede ai tuoi dati</p>
+      <p>${e(RICHIAMATA.nota)}</p>
+    </div>
+    <div class="riquadro">
+      <h2>${e(RICHIAMATA.alternativa.titolo)}</h2>
+      <p>${e(RICHIAMATA.alternativa.testo)}</p>
+    </div>
+  </aside>
+</div>
+${piede}`;
+
 export const P_RICHIAMATA = `
 ${testata('')}
 ${briciole(['Home', 'Ti richiamiamo noi'])}
@@ -579,6 +669,31 @@ export const CSS_NUOVE = `
   .consenso input[type="checkbox"] { width: 24px; height: 24px; margin: 2px 0 0;
     accent-color: var(--primario); flex: none; }
   .obbligo { color: var(--testo-tenue); }
+
+  /* ---- lo stato di errore ----
+     L'errore si riconosce da tre cose insieme — un segno, il grassetto e il
+     colore — perché una sola non basta mai: il colore non arriva a chi non
+     lo distingue, e il grassetto da solo si confonde con l'etichetta. */
+  .riepilogo-errori { border: 2px solid var(--allarme-testo); border-radius: var(--raggio);
+    background: var(--allarme-fondo); padding: var(--sp-5); margin-top: var(--sp-5);
+    display: flex; flex-direction: column; gap: var(--sp-3); }
+  .riepilogo-errori h2 { font-size: var(--corpo-4); color: var(--allarme-testo); }
+  .riepilogo-errori ul { padding-left: var(--sp-5); display: flex; flex-direction: column;
+    gap: var(--sp-2); }
+  .riepilogo-errori a { color: var(--allarme-testo); font-weight: 600;
+    text-underline-offset: 0.2em; }
+  .rassicura { font-size: var(--corpo-1); color: var(--allarme-testo); }
+  .errore-campo { display: flex; align-items: flex-start; gap: var(--sp-2);
+    font-size: var(--corpo-1); font-weight: 600; color: var(--allarme-testo); }
+  .segno { display: grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem;
+    border-radius: var(--raggio-pieno); background: var(--allarme-testo);
+    color: var(--superficie); font-size: var(--corpo-1); line-height: 1; }
+  /* Due pixel, non uno: a un bordo rosso sottile accanto a quattro campi
+     grigi non si arriva con l'occhio. */
+  .campo.errato :is(input, textarea) { border-width: 2px; border-color: var(--allarme-testo);
+    background: var(--allarme-fondo); }
+  .campo.errato input[type="checkbox"] { outline: 2px solid var(--allarme-testo);
+    outline-offset: 2px; }
   /* Il tratteggio, su questo sito, vuol dire «qui manca ancora qualcosa»:
      lo usano i segnaposto delle fotografie e delle mappe. Metterlo attorno
      all'informativa sul trattamento dei dati — che è testo definitivo e
@@ -601,4 +716,5 @@ export const NUOVE = [
   ['territorio', 'Pagina provincia', P_TERRITORIO],
   ['guida', 'Guida', P_GUIDA],
   ['richiamata', 'Richiamata', P_RICHIAMATA],
+  ['errori', 'Modulo con errori', P_RICHIAMATA_ERRORI],
 ];

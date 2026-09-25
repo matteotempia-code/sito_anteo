@@ -9,3 +9,8 @@ dist/
 dist-scheda.html
 dist-sistema.html
 dist-anteprima.html
+
+# I caratteri sono binari e vengono dai pacchetti npm: `npm run caratteri`
+# li rimette. Un binario committato in git resta nella storia per sempre,
+# in ogni sua versione.
+public/caratteri/*.woff2

@@ -3,6 +3,7 @@ import Base from '../../../../layouts/Base.astro';
 import Azione from '../../../../components/Azione.astro';
 import Pillola from '../../../../components/Pillola.astro';
 import { scheda as s } from '../../../../content/rsa-gran-torino.js';
+import { SEDE } from '../../../../lib/dati-strutturati';
 
 /**
  * La scheda di una sede, rifatta con i componenti veri.
@@ -17,34 +18,44 @@ import { scheda as s } from '../../../../content/rsa-gran-torino.js';
  * cos'è questa pagina.
  */
 
-const datiStrutturati = {
-  '@context': 'https://schema.org',
-  '@type': 'ResidentialCare',
-  name: s.nome,
-  parentOrganization: { '@type': 'Organization', name: 'Anteo Impresa Sociale' },
-  // L'indirizzo compare SOLO se la sede è pubblicabile. Per un gruppo
-  // appartamento in condominio questo ramo non esiste proprio.
-  ...(s.indirizzoPubblicabile
-    ? {
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: s.indirizzo,
-          addressLocality: s.comune,
-          addressRegion: s.provincia,
-          addressCountry: 'IT',
-        },
-      }
-    : {}),
-  availableService: { '@type': 'MedicalTherapy', name: s.tipologia },
-};
+/*
+ * I dati strutturati non si scrivono più qui.
+ *
+ * Erano un blocco a sé, con l'organizzazione ridichiarata dentro la pagina
+ * e senza le briciole: il motore vedeva un ente nuovo per ogni scheda e
+ * mostrava l'URL grezzo al posto del percorso. Adesso la pagina passa i
+ * suoi dati al layout, che li unisce all'ente e al sito in un grafo solo.
+ * La regola sull'indirizzo — se la sede non è pubblicabile, la via non si
+ * scrive — vive in lib/dati-strutturati.ts, dove vale per tutte le 140.
+ */
+const briciole = s.percorso
+  .map((voce, i) => [voce, s.urlPercorso[i]] as [string, string])
+  .filter(([, href]) => href);
+
+const sede = SEDE(
+  {
+    nome: s.nome,
+    tipologia: s.tipologia,
+    settore: s.settore,
+    descrizione: s.perChi.si,
+    comune: s.comune,
+    provincia: s.provincia,
+    indirizzo: s.indirizzo,
+    indirizzoPubblicabile: s.indirizzoPubblicabile,
+    telefono: s.telefono?.numero ?? null,
+    postiLetto: s.postiLetto,
+    percorso: Astro.url.pathname,
+  },
+  Astro.site!,
+);
 ---
 
 <Base
   titolo={`${s.nome}, ${s.comune}`}
   descrizione={`${s.tipologia} a ${s.comune}. ${s.perChi.si.slice(0, 110)}…`}
+  briciole={[...briciole, [s.nome, Astro.url.pathname]]}
+  datiPagina={sede}
 >
-  <script type="application/ld+json" set:html={JSON.stringify(datiStrutturati)} />
-
   <nav class="briciole guscio" aria-label="Percorso">
     <ol>
       {

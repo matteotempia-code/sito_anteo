@@ -140,13 +140,43 @@ const esito = await pag.evaluate(() => {
         g(`stato «${nome(s).slice(0, 30)}» senza glifo: resta distinguibile solo dal colore`);
     });
 
+    /* --- lo stato di errore ---
+       Un campo marcato sbagliato deve DIRE che cosa non va, e il riepilogo
+       deve portare a qualcosa. Un elenco di errori da cui non si salta al
+       campo è un elenco di rimproveri. */
+    p.querySelectorAll('[aria-invalid="true"]').forEach((c) => {
+      const ids = (c.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+      const testi = ids.map((i) => p.querySelector(`#${CSS.escape(i)}`)).filter(Boolean);
+      if (!testi.length)
+        g(`campo «${c.name || c.id}» marcato sbagliato senza un messaggio collegato`);
+      else if (!testi.some((t) => t.textContent.trim().length > 10))
+        g(`campo «${c.name || c.id}»: il messaggio d'errore è vuoto`);
+      // l'errore va letto prima dell'aiuto
+      if (ids.length > 1 && !/errore/.test(ids[0]))
+        g(`campo «${c.name || c.id}»: l'aiuto viene letto prima dell'errore`);
+    });
+    const riep = p.querySelector('[role="alert"]');
+    if (riep) {
+      if (!riep.hasAttribute('tabindex'))
+        g('il riepilogo degli errori non può ricevere il fuoco');
+      const salti = [...riep.querySelectorAll('a[href^="#"]')];
+      if (!salti.length) g('il riepilogo degli errori non porta a nessun campo');
+      salti.forEach((a) => {
+        if (!p.querySelector(a.getAttribute('href')))
+          g(`il riepilogo rimanda a ${a.getAttribute('href')}, che non esiste`);
+      });
+      const marcati = p.querySelectorAll('[aria-invalid="true"]').length;
+      if (salti.length !== marcati)
+        g(`il riepilogo elenca ${salti.length} errori ma i campi marcati sono ${marcati}`);
+    }
+
     /* --- segnaposto rimasti dove il testo doveva essere vero --- */
     p.querySelectorAll('main h1').forEach((h) => {
       if (/\[[A-Z]/.test(h.textContent)) g(`titolo con segnaposto: «${h.textContent.trim()}»`);
     });
   });
 
-  return guasti;
+  return { guasti, quante: document.querySelectorAll('.pagina').length };
 });
 
 /* --- lo stesso giro a larghezza di telefono --- */
@@ -170,9 +200,10 @@ const traboccano = await pag.evaluate(() => {
 
 await browser.close();
 
-const tutti = [...esito, ...traboccano.map(([a, b]) => [a + ' (telefono)', b])];
+const { guasti: trovati, quante } = esito;
+const tutti = [...trovati, ...traboccano.map(([a, b]) => [a + ' (telefono)', b])];
 if (tutti.length === 0) {
-  console.log('✓ Struttura: 13 schermate, nessun difetto strutturale o di modulo.');
+  console.log(`✓ Struttura: ${quante} schermate, nessun difetto strutturale o di modulo.`);
 } else {
   const per = new Map();
   for (const [dove, cosa] of tutti) per.set(dove, [...(per.get(dove) ?? []), cosa]);

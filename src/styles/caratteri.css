@@ -1,0 +1,86 @@
+/**
+ * I caratteri, serviti dal nostro dominio.
+ *
+ * PERCHÉ NON GOOGLE FONTS. Non è una questione di prestazioni — il loro CDN
+ * è veloce. È che un carattere caricato da un host terzo fa partire una
+ * richiesta dal browser di chi legge verso un server che non controlliamo,
+ * con il suo indirizzo IP e la pagina di provenienza. Su un sito dove la
+ * pagina di provenienza può essere /servizi/dipendenze o
+ * /servizi/salute-mentale, quel dato rivela una condizione di salute e
+ * finisce in un registro che non è nostro. È anche la ragione per cui in
+ * astro.config.mjs il prefetch automatico è spento.
+ *
+ * C'è un precedente in casa: il sito attuale carica il font delle icone dal
+ * server dimostrativo del fornitore del tema. Se quel server si spegne, le
+ * icone spariscono da anteocoop.it e nessuno in Anteo Impresa Sociale può
+ * rimediare.
+ *
+ * SOLO IL SOTTOINSIEME LATINO. I pacchetti completi portano cirillico,
+ * greco e vietnamita: circa 300 KB che nessun visitatore di questo sito
+ * userà mai. Il sottoinsieme latin-ext copre l'italiano e i nomi propri
+ * europei, ed è l'unico che serve. L'intervallo unicode qui sotto è quello
+ * pubblicato da Google Fonts per i sottoinsiemi «latin» e «latin-ext»: se
+ * un carattere non ci sta dentro, il browser non scarica il file e ricade
+ * sul carattere di sistema, invece di scaricare e poi non usare.
+ *
+ * FONT-DISPLAY: SWAP. Il testo compare subito con il carattere di sistema e
+ * viene sostituito quando il nostro è pronto. L'alternativa (`block`)
+ * lascia il testo invisibile fino a tre secondi: su una rete lenta, una
+ * persona che cerca una RSA per suo padre vedrebbe una pagina vuota.
+ *
+ * I file non stanno nel repository: li mette `npm run caratteri`, che li
+ * prende dai pacchetti @fontsource-variable e li copia in
+ * public/caratteri/. `scripts/verifica-caratteri.mjs` fallisce se mancano,
+ * così il sito non può essere pubblicato in silenzio con Georgia al posto
+ * di Fraunces.
+ */
+
+/* latin + latin-ext: italiano e nomi propri europei. */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 500 700; /* asse variabile: 500, 600 e 700 dallo stesso file */
+  font-display: swap;
+  src: url('/caratteri/fraunces-latin.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0100-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+2074, U+20A0-20AB,
+    U+20AD-20CF, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/caratteri/public-sans-latin.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0100-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+2074, U+20A0-20AB,
+    U+20AD-20CF, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/**
+ * Le metriche del ripiego.
+ *
+ * Finché Fraunces non è pronto il titolo è in Georgia, che ha proporzioni
+ * diverse: al momento dello scambio il testo si riflowa e la pagina salta.
+ * È uno degli scarti di impaginazione che Core Web Vitals misura (CLS), e
+ * si vede a occhio nudo. Questi due ripieghi hanno le metriche riscalate
+ * per occupare lo stesso spazio del carattere vero.
+ */
+@font-face {
+  font-family: 'Fraunces ripiego';
+  src: local('Georgia'), local('Times New Roman'), local('Times');
+  size-adjust: 103%;
+  ascent-override: 93%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Public Sans ripiego';
+  src: local('Helvetica Neue'), local('Arial'), local('Liberation Sans');
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}

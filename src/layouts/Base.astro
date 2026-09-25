@@ -1,6 +1,5 @@
 ---
-import '@fontsource-variable/fraunces';
-import '@fontsource-variable/public-sans';
+import '../styles/caratteri.css';
 import '../styles/token.css';
 import '../styles/base.css';
 import Testata from '../components/Testata.astro';
@@ -9,21 +8,54 @@ import Piede from '../components/Piede.astro';
 /**
  * Lo scheletro di ogni pagina.
  *
- * I caratteri sono auto-ospitati (pacchetti fontsource): nessun host di
+ * I caratteri sono auto-ospitati, solo sottoinsieme latino: nessun host di
  * terze parti sul percorso critico. Il sito attuale carica ancora il font
  * delle icone dal server dimostrativo del fornitore del tema — se quel
  * server si spegne, le icone spariscono da anteocoop.it e nessuno in Anteo
- * Impresa Sociale può rimediare. Qui non succede.
+ * Impresa Sociale può rimediare. Qui non succede. Le ragioni per esteso, e
+ * quella che conta di più (l'indirizzo IP di chi legge, con in chiaro la
+ * pagina da cui arriva), stanno in styles/caratteri.css.
  */
+import { ORGANIZZAZIONE, SITO_WEB, briciolePerPercorso } from '../lib/dati-strutturati';
+
 interface Props {
   titolo: string;
   descrizione: string;
   /** Fuori dall'indice: aree riservate, pagine di servizio. */
   noindex?: boolean;
+  /**
+   * Le briciole della pagina, nell'ordine in cui compaiono: [testo, href].
+   * Senza, il motore di ricerca mostra l'URL grezzo al posto del percorso,
+   * e per una scheda di sede l'URL è lungo quattro livelli.
+   */
+  briciole?: [string, string][];
+  /** Dati strutturati specifici della pagina (una sede, un annuncio). */
+  datiPagina?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { titolo, descrizione, noindex = false } = Astro.props;
+const { titolo, descrizione, noindex = false, briciole, datiPagina } = Astro.props;
 const canonico = new URL(Astro.url.pathname, Astro.site).href;
+
+/**
+ * I dati strutturati vanno in un blocco solo, come @graph.
+ *
+ * Non per eleganza: con più blocchi <script type="application/ld+json">
+ * separati, i nodi non possono riferirsi l'uno all'altro e ogni pagina
+ * ridichiara l'organizzazione da capo. Con un grafo unico, l'organizzazione
+ * ha un @id stabile e tutto il resto la cita — che è come il motore capisce
+ * che le 140 schede appartengono allo stesso ente.
+ *
+ * Regola che vale per tutti: qui dentro non si dichiara niente che non sia
+ * anche visibile nella pagina. Dati strutturati che raccontano una cosa
+ * diversa dal testo sono una penalizzazione, non un'ottimizzazione.
+ */
+const grafo: Record<string, unknown>[] = [
+  ORGANIZZAZIONE(Astro.site!),
+  SITO_WEB(Astro.site!),
+  ...(briciole?.length ? [briciolePerPercorso(briciole, Astro.site!)] : []),
+  ...(datiPagina ? (Array.isArray(datiPagina) ? datiPagina : [datiPagina]) : []),
+];
+const datiStrutturati = JSON.stringify({ '@context': 'https://schema.org', '@graph': grafo });
 ---
 
 <!doctype html>
@@ -50,6 +82,26 @@ const canonico = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="theme-color" content="#15111d" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/marchio/logo-mark.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- I due caratteri si precaricano: stanno sul nostro dominio, quindi
+         nessun preconnect a terzi, e sono sul percorso critico del primo
+         disegno del testo. `crossorigin` serve anche per le risorse dello
+         stesso dominio, perché i font si recuperano sempre in modalità
+         anonima: senza, il browser scarica il file due volte. -->
+    <link
+      rel="preload"
+      href="/caratteri/fraunces-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/caratteri/public-sans-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <script type="application/ld+json" set:html={datiStrutturati} is:inline />
   </head>
   <body>
     <a class="salta" href="#contenuto">Salta al contenuto</a>

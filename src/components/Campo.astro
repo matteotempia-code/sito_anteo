@@ -2,12 +2,21 @@
 /**
  * Il campo da compilare.
  *
- * Tre cose non sono negoziabili, e sono qui dentro invece che nelle linee
- * guida perché una linea guida non si fa rispettare da sola:
+ * Cinque cose non sono negoziabili, e stanno qui dentro invece che nelle
+ * linee guida perché una linea guida non si fa rispettare da sola:
  *  · l'etichetta è sempre collegata al campo, mai un placeholder al suo posto;
  *  · l'obbligatorietà è dichiarata a parole, non con un asterisco;
  *  · il bordo sta sopra 3:1, perché il nostro pubblico sono spesso familiari
- *    ultrasessantenni e un bordo a 1,77:1 è di fatto invisibile.
+ *    ultrasessantenni e un bordo a 1,77:1 è di fatto invisibile;
+ *  · l'errore si dice a parole accanto al campo, e il campo si marca con
+ *    `aria-invalid`: un bordo rosso da solo non è un messaggio, e per chi i
+ *    colori non li distingue non è niente;
+ *  · il messaggio d'errore non sostituisce il testo di aiuto, si aggiunge —
+ *    chi ha sbagliato ha bisogno dell'aiuto più di prima, non di meno.
+ *
+ * Il campo non valida da sé. La validazione la fa il modulo, che è l'unico
+ * a sapere quando (all'invio, mai mentre si digita) e che deve anche
+ * spostare il fuoco sul riepilogo. Qui si riceve l'esito e lo si mostra.
  */
 interface Props {
   id: string;
@@ -19,6 +28,9 @@ interface Props {
   autocomplete?: string;
   inputmode?: string;
   placeholder?: string;
+  /** Il messaggio d'errore, già scritto per chi legge. Vedi ERRORI sotto. */
+  errore?: string | null;
+  valore?: string | null;
 }
 
 const {
@@ -31,38 +43,57 @@ const {
   autocomplete,
   inputmode,
   placeholder,
+  errore = null,
+  valore = null,
 } = Astro.props;
 
 const idAiuto = aiuto ? `${id}-aiuto` : undefined;
+const idErrore = errore ? `${id}-errore` : undefined;
+
+/**
+ * L'ordine conta: prima l'errore, poi l'aiuto.
+ *
+ * `aria-describedby` viene letto nell'ordine in cui compaiono gli id. Chi
+ * usa lo schermo parlante, tornando su un campo sbagliato, deve sentire
+ * prima che cosa non va e poi come rimediare — non il contrario.
+ */
+const descritto = [idErrore, idAiuto].filter(Boolean).join(' ') || undefined;
+
+const comuni = {
+  id,
+  name: nome ?? id,
+  required: obbligatorio,
+  'aria-describedby': descritto,
+  'aria-invalid': errore ? ('true' as const) : undefined,
+  placeholder,
+};
 ---
 
-<div class="campo">
+<div class="campo" data-errato={errore ? 'si' : undefined}>
   <label for={id}>
     {etichetta}
     {obbligatorio ? <span class="obbligo">(obbligatorio)</span> : <span class="facolt">(facoltativo)</span>}
   </label>
+
   {aiuto && <p id={idAiuto} class="aiuto">{aiuto}</p>}
+
+  {
+    /* Il messaggio sta PRIMA del campo. Sotto, chi ingrandisce la pagina
+       del 200 % — cioè una parte non piccola di questo pubblico — se lo
+       trova fuori schermo proprio mentre corregge. */
+    errore && (
+      <p id={idErrore} class="errore">
+        <span class="segno" aria-hidden="true">!</span>
+        <span>{errore}</span>
+      </p>
+    )
+  }
+
   {
     tipo === 'textarea' ? (
-      <textarea
-        id={id}
-        name={nome ?? id}
-        rows="4"
-        required={obbligatorio}
-        aria-describedby={idAiuto}
-        placeholder={placeholder}
-      />
+      <textarea {...comuni} rows="4">{valore}</textarea>
     ) : (
-      <input
-        id={id}
-        name={nome ?? id}
-        type={tipo}
-        required={obbligatorio}
-        aria-describedby={idAiuto}
-        autocomplete={autocomplete}
-        inputmode={inputmode}
-        placeholder={placeholder}
-      />
+      <input {...comuni} type={tipo} value={valore} autocomplete={autocomplete} inputmode={inputmode} />
     )
   }
 </div>
@@ -94,6 +125,32 @@ const idAiuto = aiuto ? `${id}-aiuto` : undefined;
     margin: 0;
   }
 
+  /* L'errore si riconosce da tre cose insieme — un segno, il grassetto e
+     il colore — perché una sola non basta mai: il colore non arriva a chi
+     non lo distingue, e il grassetto da solo si confonde con l'etichetta. */
+  .errore {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    margin: 0;
+    font-size: var(--corpo-1);
+    font-weight: var(--peso-forte);
+    color: var(--allarme-testo);
+  }
+
+  .segno {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--raggio-pieno);
+    background: var(--allarme-testo);
+    color: var(--superficie);
+    font-size: var(--corpo-1);
+    line-height: 1;
+  }
+
   input,
   textarea {
     min-height: 52px;
@@ -104,6 +161,15 @@ const idAiuto = aiuto ? `${id}-aiuto` : undefined;
     font-size: var(--corpo-2);
     line-height: var(--interlinea-media);
     width: 100%;
+  }
+
+  /* Due pixel, non uno: a un bordo rosso sottile accanto a quattro campi
+     grigi non si arriva con l'occhio. */
+  :global([data-errato='si']) input,
+  :global([data-errato='si']) textarea {
+    border-width: 2px;
+    border-color: var(--allarme-testo);
+    background: var(--allarme-fondo);
   }
 
   textarea {
