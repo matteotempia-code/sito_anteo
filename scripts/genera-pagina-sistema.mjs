@@ -8,6 +8,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { NUMERO_COPPIE } from './verifica-contrasto.mjs';
 
 const qui = dirname(fileURLToPath(import.meta.url));
 const tokenCss = readFileSync(resolve(qui, '../src/styles/token.css'), 'utf8');
@@ -63,7 +64,13 @@ const CORPI = [
   ['--corpo-1', 15, 'Note, didascalie, etichette, pillole.'],
 ];
 
-const SPAZI = [4, 8, 12, 16, 24, 32, 48, 64];
+/* I passi di spaziatura si leggono dal file dei token, non si ricopiano:
+   la pagina diceva «otto passi» dopo che ne era stato aggiunto un nono. */
+const SPAZI = [...tokenCss.matchAll(/--sp-(\d+):\s*([\d.]+)rem/g)].map((m) => [
+  +m[1],
+  Math.round(parseFloat(m[2]) * 16),
+]);
+const PAROLA = ['zero','uno','due','tre','quattro','cinque','sei','sette','otto','nove','dieci','undici'];
 
 // Il blocco :root della pagina autonoma: gli stessi token, copiati dal file
 // vero. La pagina si adatta al tema chiaro e scuro come il sito.
@@ -215,10 +222,11 @@ ${CORPI.map(([tok, px, uso]) => `          <tr><td><code>${tok}</code></td><td c
   </section>
 
   <section>
-    <h2>Otto passi di spaziatura</h2>
-    <p>Tutti multipli di 4. Fuori da questi otto non si va, e un controllo automatico blocca chi ci prova.</p>
+    <h2>${PAROLA[SPAZI.length][0].toUpperCase()}${PAROLA[SPAZI.length].slice(1)} passi di spaziatura</h2>
+    <p>Tutti multipli di 4. Fuori da questi ${PAROLA[SPAZI.length]} non si va, e un controllo
+    automatico blocca chi ci prova.</p>
     <ul class="spazi">
-${SPAZI.map((px, i) => `      <li><span class="barra" style="width:${px}px"></span><code>--sp-${i + 1}</code><span class="mini numeri">${px} px</span></li>`).join('\n')}
+${SPAZI.map(([n, px]) => `      <li><span class="barra" style="width:${px}px"></span><code>--sp-${n}</code><span class="mini numeri">${px} px</span></li>`).join('\n')}
     </ul>
   </section>
 
@@ -282,7 +290,9 @@ ${SPAZI.map((px, i) => `      <li><span class="barra" style="width:${px}px"></sp
       <li><strong>Nessun valore letterale nei componenti.</strong> Colore, corpo, spaziatura e
       raggio vengono dai token, e un controllo fallisce se ne compare uno scritto a mano.</li>
       <li><strong>Ogni coppia testo/fondo sopra 4,5:1, ogni bordo di controllo sopra 3:1.</strong>
-      Novanta coppie ricalcolate a ogni modifica.</li>
+      <span class="numeri">${NUMERO_COPPIE}</span> coppie ricalcolate a ogni modifica, nei due
+      temi. Il numero lo dichiara il verificatore, non questa pagina: diceva «novanta» quando
+      erano già molte di più.</li>
       <li><strong>Focus visibile ovunque:</strong> contorno di 3 px con scostamento di 2 px su ogni
       elemento interattivo, in entrambi i temi.</li>
       <li><strong>Una sola navigazione</strong>, identica su tutte le pagine, con l'area invianti

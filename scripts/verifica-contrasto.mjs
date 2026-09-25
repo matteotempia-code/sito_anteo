@@ -132,10 +132,19 @@ agg('--su-scuro-forte', '--piede-fondo', 4.5, 'nome nel piè di pagina');
 agg('--focus-su-scuro', '--piede-fondo', 3, 'contorno di fuoco nel piè di pagina');
 agg('--bordo-su-scuro', '--piede-fondo', 1.2, 'divisore del piè di pagina');
 
+/* L'elenco si esporta perché la pagina del sistema dichiara quante coppie
+   vengono ricalcolate a ogni modifica, e quel numero non va scritto a mano:
+   diceva «novanta» quando erano già centocinquantasei. */
+export const NUMERO_COPPIE = COPPIE.length * 2;
+
+/* Il controllo gira solo quando lo si invoca: importare l'elenco delle
+   coppie da un altro script non deve stampare un rapporto. */
+const invocato = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
 let errori = 0;
 let controlli = 0;
 
-for (const [tema, token] of [['chiaro', CHIARO], ['scuro', SCURO]]) {
+if (invocato) for (const [tema, token] of [['chiaro', CHIARO], ['scuro', SCURO]]) {
   for (const [a, b, soglia, cosa] of COPPIE) {
     const ca = token[a], cb = token[b];
     if (!ca || !cb) {
@@ -154,8 +163,9 @@ for (const [tema, token] of [['chiaro', CHIARO], ['scuro', SCURO]]) {
   }
 }
 
-if (errori) {
+if (invocato && errori) {
   console.error(`\n✗ Contrasto: ${errori} coppie sotto soglia su ${controlli} verificate.`);
   process.exit(1);
 }
-console.log(`✓ Contrasto: ${controlli} coppie verificate nei due temi, tutte a norma.`);
+if (invocato)
+  console.log(`✓ Contrasto: ${controlli} coppie verificate nei due temi, tutte a norma.`);
