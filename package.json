@@ -6,7 +6,7 @@
   "description": "Nuovo sito di Anteo Impresa Sociale",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run verifica:caratteri && astro build",
+    "build": "npm run caratteri && npm run verifica:caratteri && astro build",
     "preview": "astro preview",
     "caratteri": "node scripts/prepara-caratteri.mjs",
     "marchio": "node scripts/ottimizza-marchio.mjs",
@@ -24,7 +24,5 @@
     "@supabase/supabase-js": "^2.45.0",
     "astro": "^5.1.0"
   },
-  "devDependencies": {
-    "playwright": "^1.48.0"
-  }
+  "devDependencies": {}
 }

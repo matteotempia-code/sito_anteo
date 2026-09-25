@@ -23,10 +23,21 @@ import { dirname, resolve, join } from 'node:path';
 const qui = dirname(fileURLToPath(import.meta.url));
 const cartella = resolve(qui, '../public/caratteri');
 
-/** Nome del file, peso massimo ragionevole per il solo sottoinsieme latino. */
+/**
+ * Nome del file e peso massimo ragionevole.
+ *
+ * Il limite non è pedanteria: è il controllo che ha preso il difetto vero.
+ * La prima versione dello script di copia sceglieva «il .woff2 latino più
+ * grande», e per Fraunces quello è `full` — tutti e quattro gli assi
+ * insieme, 121 KB invece dei 36 del solo asse dei pesi. Il limite l'ha
+ * rifiutato e il build è caduto, che è esattamente quello che doveva
+ * succedere. Sotto, i pesi veri dei file giusti, con margine.
+ */
 const ATTESI = [
-  ['fraunces-latin.woff2', 90_000],
-  ['public-sans-latin.woff2', 90_000],
+  ['fraunces-latin.woff2', 60_000],
+  ['fraunces-latin-ext.woff2', 60_000],
+  ['public-sans-latin.woff2', 45_000],
+  ['public-sans-latin-ext.woff2', 45_000],
 ];
 
 /* Le licenze vanno distribuite insieme ai caratteri: Fraunces e Public Sans

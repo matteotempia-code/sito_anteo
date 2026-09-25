@@ -28,6 +28,13 @@
  * lascia il testo invisibile fino a tre secondi: su una rete lenta, una
  * persona che cerca una RSA per suo padre vedrebbe una pagina vuota.
  *
+ * QUALE FILE, DI PRECISO. Fraunces pubblica il sottoinsieme latino in
+ * cinque varianti d'asse: `wght` (36 KB, i soli pesi), `opsz` (67 KB),
+ * `soft`, `wonk` e `full` (121 KB, tutti gli assi insieme). Di questo sito
+ * servono i pesi e nient'altro — 500, 600 e 700 per i titoli — quindi si
+ * prende `wght`. Public Sans ha il solo asse dei pesi: 26 KB. In tutto 63 KB
+ * per i due caratteri, contro i circa 300 KB dei pacchetti interi.
+ *
  * I file non stanno nel repository: li mette `npm run caratteri`, che li
  * prende dai pacchetti @fontsource-variable e li copia in
  * public/caratteri/. `scripts/verifica-caratteri.mjs` fallisce se mancano,
@@ -35,16 +42,32 @@
  * di Fraunces.
  */
 
-/* latin + latin-ext: italiano e nomi propri europei. */
 @font-face {
   font-family: 'Fraunces';
   font-style: normal;
-  font-weight: 500 700; /* asse variabile: 500, 600 e 700 dallo stesso file */
+  font-weight: 500 700;
   font-display: swap;
-  src: url('/caratteri/fraunces-latin.woff2') format('woff2-variations');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0100-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+2074, U+20A0-20AB,
-    U+20AD-20CF, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  /* `format('woff2')` e basta. La forma `woff2-variations` è una stringa
+     legacy: i browser che non la riconoscono scartano l'intera regola e
+     ricadono sul carattere di sistema, senza dire niente. Un file variabile
+     dichiarato come woff2 con un intervallo di pesi funziona ovunque. */
+  src: url('/caratteri/fraunces-latin.woff2') format('woff2');
+  /* latino di base: l’italiano */
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('/caratteri/fraunces-latin-ext.woff2') format('woff2');
+  /* latino esteso: Łukasz, Đorđe, Csaba */
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
@@ -52,10 +75,23 @@
   font-style: normal;
   font-weight: 400 600;
   font-display: swap;
-  src: url('/caratteri/public-sans-latin.woff2') format('woff2-variations');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0100-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+2074, U+20A0-20AB,
-    U+20AD-20CF, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url('/caratteri/public-sans-latin.woff2') format('woff2');
+  /* latino di base */
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/caratteri/public-sans-latin-ext.woff2') format('woff2');
+  /* latino esteso */
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /**

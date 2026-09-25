@@ -1,0 +1,17 @@
+# Questo non è ancora il sito di Anteo Impresa Sociale.
+#
+# È la versione in lavorazione, e contiene segnaposto al posto dei dati
+# veri: nomi di direttori, posti letto, tempi di attesa. Indicizzarla
+# significherebbe far comparire nei risultati di ricerca informazioni
+# false su strutture sanitarie reali.
+#
+# Il divieto è ripetuto anche come intestazione HTTP (X-Robots-Tag) in
+# vercel.json, perché un robots.txt impedisce la scansione ma non sempre
+# l'indicizzazione: una pagina linkata da fuori può finire nei risultati
+# lo stesso, con lo snippet preso altrove. Le due cose insieme chiudono
+# tutte e due le strade.
+#
+# Questo file va sostituito prima della messa in linea vera.
+
+User-agent: *
+Disallow: /

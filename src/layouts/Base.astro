@@ -82,11 +82,13 @@ const datiStrutturati = JSON.stringify({ '@context': 'https://schema.org', '@gra
     <meta name="theme-color" content="#15111d" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/marchio/logo-mark.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <!-- I due caratteri si precaricano: stanno sul nostro dominio, quindi
-         nessun preconnect a terzi, e sono sul percorso critico del primo
-         disegno del testo. `crossorigin` serve anche per le risorse dello
-         stesso dominio, perché i font si recuperano sempre in modalità
-         anonima: senza, il browser scarica il file due volte. -->
+    <!-- Si precarica solo il sottoinsieme latino di base, che serve a ogni
+         pagina. Il latino esteso (Łukasz, Đorđe) lo scarica il browser da
+         sé, e solo dove serve davvero: precaricarlo sempre vorrebbe dire
+         far pagare 51 KB a tutti per i nomi di pochi.
+         `crossorigin` serve anche per risorse dello stesso dominio, perché
+         i font si recuperano sempre in modalità anonima: senza, il browser
+         scarica il file due volte. -->
     <link
       rel="preload"
       href="/caratteri/fraunces-latin.woff2"
